@@ -1,0 +1,168 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.register-container {
+  width: 100%;
+  max-width: 500px;
+}
+
+.register-card {
+  background: var(--bg-white);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 30px;
+}
+
+.register-card h1 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+.register-subtitle {
+  text-align: center;
+  color: var(--text-light);
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.security-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.security-section h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.security-note {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 20px;
+}
+
+.register-footer {
+  margin-top: 20px;
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.register-footer p {
+  color: var(--text-light);
+  font-size: 14px;
+  margin: 0;
+}
+
+.register-footer a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.register-footer a:hover {
+  text-decoration: underline;
+}
+
+.recovery-modal .modal-content {
+  max-width: 600px;
+}
+
+.recovery-modal .modal-header {
+  background-color: #fff3cd;
+  border-bottom: 2px solid var(--warning);
+}
+
+.recovery-modal .modal-header h3 {
+  color: #856404;
+  margin: 0;
+}
+
+.recovery-code-display {
+  padding: 20px 0;
+}
+
+.recovery-warning {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 16px;
+  color: var(--danger);
+}
+
+.recovery-code-box {
+  background-color: #f8f9fa;
+  border: 2px dashed var(--primary);
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  margin: 30px 0;
+}
+
+.recovery-code {
+  font-family: 'Courier New', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  word-break: break-all;
+}
+
+.recovery-checklist {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #fff3cd;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.recovery-checklist p {
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: normal;
+  margin-bottom: 0;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  min-height: 20px;
+  cursor: pointer;
+}
+
+.checkbox-label span {
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .register-card {
+    padding: 40px;
+  }
+
+  .register-card h1 {
+    font-size: 32px;
+  }
+
+  .register-subtitle {
+    font-size: 16px;
+  }
+
+  .recovery-code {
+    font-size: 32px;
+  }
+}

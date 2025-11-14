@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+    <link rel="stylesheet" href="/css/analytics.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+    <%- include('partials/notification') %>
+
+    <main class="container">
+        <h1>Analytics</h1>
+
+        <section class="reality-section">
+            <div class="card reality-card" id="realityCard">
+                <h2>REALITY CHECK</h2>
+                <div class="reality-stats">
+                    <div class="reality-stat">
+                        <div class="reality-label">Money You Have Right Now</div>
+                        <div class="reality-value amount" id="currentBalance">$0.00</div>
+                    </div>
+                    <div class="reality-stat">
+                        <div class="reality-label">Money Coming This Month</div>
+                        <div class="reality-value amount text-success" id="monthlyIncome">$0.00</div>
+                    </div>
+                    <div class="reality-stat">
+                        <div class="reality-label">Money Going Out This Month</div>
+                        <div class="reality-value amount text-danger" id="monthlyExpenses">$0.00</div>
+                    </div>
+                    <div class="reality-stat">
+                        <div class="reality-label">Difference</div>
+                        <div class="reality-value amount" id="difference">$0.00</div>
+                    </div>
+                </div>
+                <div class="reality-message" id="statusMessage"></div>
+            </div>
+        </section>
+
+        <section class="trend-section">
+            <div class="card">
+                <h2>Income vs Expenses Trend</h2>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div class="trend-message" id="trendMessage"></div>
+            </div>
+        </section>
+
+        <section class="breakdown-section">
+            <div class="card">
+                <h2>Where Your Money Goes This Month</h2>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                <div class="breakdown-list" id="categoryBreakdown"></div>
+                <div class="brutal-message" id="brutalMessage"></div>
+            </div>
+        </section>
+
+        <section class="trends-section">
+            <div class="card">
+                <h2>Category Trends</h2>
+                <div id="categoryTrends" class="trends-list"></div>
+            </div>
+        </section>
+
+        <section class="leaks-section">
+            <div class="card leaks-card">
+                <h2>💸 MONEY LEAKS</h2>
+                <p class="leaks-subtitle">Small expenses that add up</p>
+                <div id="moneyLeaks" class="leaks-list"></div>
+            </div>
+        </section>
+
+        <section class="savings-section">
+            <div class="card">
+                <h2>Savings Rate (Last 3 Months)</h2>
+                <div id="savingsRate" class="savings-list"></div>
+                <div class="savings-message" id="savingsMessage"></div>
+            </div>
+        </section>
+
+        <section class="reports-section">
+            <div class="card">
+                <h2>Download Reports</h2>
+                <div class="reports-actions">
+                    <button class="btn btn-primary" id="downloadMonthlyBtn">Download Monthly Report PDF</button>
+                    <button class="btn btn-primary" id="downloadTaxBtn">Download Tax Summary PDF</button>
+                    <button class="btn btn-primary" id="downloadCsvBtn">Download Transaction History CSV</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="/js/global.js"></script>
+    <script src="/js/partials.js"></script>
+    <script src="/js/charts.js"></script>
+    <script src="/js/analytics.js"></script>
+</body>
+</html>

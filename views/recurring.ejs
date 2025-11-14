@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+    <link rel="stylesheet" href="/css/recurring.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+    <%- include('partials/notification') %>
+
+    <main class="container">
+        <h1>Recurring Payments</h1>
+
+        <section class="info-section">
+            <div class="card info-banner">
+                <h3>How This Works</h3>
+                <p>Set up your regular bills here. We'll automatically prompt you each month to confirm if you paid them. This keeps you accountable.</p>
+            </div>
+        </section>
+
+        <section class="add-section">
+            <div class="card">
+                <h2>Add New Recurring Payment</h2>
+                <form id="addRecurringForm">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" placeholder="Rent" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="">Select category</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Utilities">Utilities</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Groceries">Groceries</option>
+                            <option value="Insurance">Insurance</option>
+                            <option value="Debt Payments">Debt Payments</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Dining Out">Dining Out</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Hobbies">Hobbies</option>
+                            <option value="Subscriptions">Subscriptions</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expectedAmount">Expected Amount</label>
+                        <input type="number" id="expectedAmount" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dueDay">Due Day (1-31)</label>
+                        <input type="number" id="dueDay" min="1" max="31" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="frequency">Frequency</label>
+                        <select id="frequency" required>
+                            <option value="">Select frequency</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="biweekly">Biweekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoPrompt" checked>
+                            <span>Auto-Prompt Enabled</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="active" checked>
+                            <span>Active</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Add Recurring Payment</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="active-section">
+            <div class="card">
+                <h2>Active Recurring Payments</h2>
+                <div id="activeList" class="recurring-list"></div>
+            </div>
+        </section>
+
+        <section class="inactive-section">
+            <div class="card">
+                <details>
+                    <summary class="section-toggle">
+                        <h3>Inactive Templates</h3>
+                    </summary>
+                    <div id="inactiveList" class="recurring-list"></div>
+                </details>
+            </div>
+        </section>
+    </main>
+
+    <div id="editRecurringModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Recurring Payment</h3>
+                <button class="modal-close" id="closeEditModal">&times;</button>
+            </div>
+            <form id="editRecurringForm">
+                <input type="hidden" id="editRecurringId">
+                
+                <div class="form-group">
+                    <label for="editName">Name</label>
+                    <input type="text" id="editName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory" required>
+                        <option value="Housing">Housing</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Groceries">Groceries</option>
+                        <option value="Insurance">Insurance</option>
+                        <option value="Debt Payments">Debt Payments</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Dining Out">Dining Out</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Hobbies">Hobbies</option>
+                        <option value="Subscriptions">Subscriptions</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editExpectedAmount">Expected Amount</label>
+                    <input type="number" id="editExpectedAmount" step="0.01" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDueDay">Due Day (1-31)</label>
+                    <input type="number" id="editDueDay" min="1" max="31" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editFrequency">Frequency</label>
+                    <select id="editFrequency" required>
+                        <option value="weekly">Weekly</option>
+                        <option value="biweekly">Biweekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editAutoPrompt">
+                        <span>Auto-Prompt Enabled</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editActive">
+                        <span>Active</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Update Recurring Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="historyModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Payment History</h3>
+                <button class="modal-close" id="closeHistoryModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="historyList" class="history-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script src="/js/global.js"></script>
+    <script src="/js/partials.js"></script>
+    <script src="/js/recurring.js"></script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+    <link rel="stylesheet" href="/css/settings.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+    <%- include('partials/notification') %>
+
+    <main class="container">
+        <h1>Settings</h1>
+
+        <section class="household-section">
+            <div class="card">
+                <h2>Household Information</h2>
+                <form id="householdForm">
+                    <div class="form-group">
+                        <label for="householdName">Household Name</label>
+                        <input type="text" id="householdName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" disabled>
+                        <small class="form-note">Username cannot be changed</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Update Household Info</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="password-section">
+            <div class="card">
+                <h2>Change Password</h2>
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" required autocomplete="current-password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" required autocomplete="new-password" minlength="6">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" required autocomplete="new-password" minlength="6">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="balance-section">
+            <div class="card">
+                <h2>Balance Management</h2>
+                <div class="balance-info">
+                    <div class="balance-item">
+                        <span class="balance-label">Current Balance:</span>
+                        <span class="balance-value amount" id="currentBalance">$0.00</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="balance-label">Last Updated:</span>
+                        <span class="balance-value" id="lastUpdated">-</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="updateBalanceBtn">Update Balance Manually</button>
+                <button class="btn btn-primary" id="viewHistoryBtn">View Balance History</button>
+            </div>
+        </section>
+
+        <section class="preferences-section">
+            <div class="card">
+                <h2>Notification Preferences</h2>
+                <form id="preferencesForm">
+                    <div class="form-group">
+                        <label for="reminderFrequency">Pending Confirmation Reminder Frequency</label>
+                        <select id="reminderFrequency">
+                            <option value="daily">Daily</option>
+                            <option value="every3days">Every 3 Days</option>
+                            <option value="weekly">Weekly</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lowBalanceThreshold">Low Balance Warning Threshold</label>
+                        <input type="number" id="lowBalanceThreshold" step="0.01" min="0">
+                        <small class="form-note">Get notified when balance drops below this amount</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Update Preferences</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="data-section">
+            <div class="card">
+                <h2>Data Management</h2>
+                <div class="data-actions">
+                    <button class="btn btn-primary" id="exportDataBtn">Export All Data (JSON)</button>
+                    <button class="btn btn-danger" id="deleteAllBtn">Delete All Data</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="danger-section">
+            <div class="card danger-card">
+                <h2>Danger Zone</h2>
+                <div class="danger-actions">
+                    <button class="btn btn-danger" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="updateBalanceModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Balance Manually</h3>
+                <button class="modal-close" id="closeBalanceModal">&times;</button>
+            </div>
+            <form id="updateBalanceForm">
+                <div class="form-group">
+                    <label for="newBalance">New Balance</label>
+                    <input type="number" id="newBalance" step="0.01" required>
+                    <small class="form-note">Can be negative for overdraft</small>
+                </div>
+                <div class="form-group">
+                    <label for="balanceReason">Reason (optional)</label>
+                    <input type="text" id="balanceReason" placeholder="Manual adjustment">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Update Balance</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="balanceHistoryModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Balance History</h3>
+                <button class="modal-close" id="closeHistoryModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="balanceHistory" class="history-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteConfirmModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚠️ Delete All Data</h3>
+                <button class="modal-close" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="warning-text">This will permanently delete all your expenses, income, and recurring payments. Your account will remain active but all data will be gone.</p>
+                <p class="warning-text"><strong>This cannot be undone.</strong></p>
+                <form id="deleteConfirmForm">
+                    <div class="form-group">
+                        <label for="confirmPassword">Enter your password to confirm</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger btn-block">Yes, Delete Everything</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script src="/js/global.js"></script>
+    <script src="/js/partials.js"></script>
+    <script src="/js/settings.js"></script>
+</body>
+</html>

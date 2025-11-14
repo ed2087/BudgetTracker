@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+    <%- include('partials/notification') %>
+
+    <main class="container">
+        <h1>Dashboard</h1>
+
+        <section id="pendingSection" class="pending-section hidden">
+            <div class="card">
+                <div class="section-header">
+                    <h2>Pending Confirmations</h2>
+                    <span class="badge badge-warning" id="pendingCount">0</span>
+                </div>
+
+                <div id="incomeConfirmations" class="confirmations-list"></div>
+                <div id="expenseConfirmations" class="confirmations-list"></div>
+            </div>
+        </section>
+
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Current Balance</div>
+                    <div class="stat-value amount" id="currentBalance">$0.00</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Income This Month</div>
+                    <div class="stat-value amount text-success" id="monthlyIncome">$0.00</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Expenses This Month</div>
+                    <div class="stat-value amount text-danger" id="monthlyExpenses">$0.00</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Net Difference</div>
+                    <div class="stat-value amount" id="netDifference">$0.00</div>
+                </div>
+            </div>
+
+            <div class="card status-card" id="statusCard">
+                <p class="status-message" id="statusMessage"></p>
+            </div>
+        </section>
+
+        <section class="actions-section">
+            <div class="card">
+                <h3>Quick Actions</h3>
+                <div class="actions-grid">
+                    <button class="btn btn-primary" id="addExpenseBtn">+ Add Expense</button>
+                    <button class="btn btn-primary" id="updateBalanceBtn">Update Balance</button>
+                    <a href="/analytics" class="btn btn-primary">View Analytics</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="upcoming-section">
+            <div class="card">
+                <h3>Upcoming Bills (Next 7 Days)</h3>
+                <div id="upcomingBills" class="bills-list"></div>
+            </div>
+        </section>
+
+        <section class="recent-section">
+            <div class="card">
+                <h3>Recent Activity</h3>
+                <div id="recentActivity" class="activity-list"></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="addExpenseModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add One-Time Expense</h3>
+                <button class="modal-close" id="closeExpenseModal">&times;</button>
+            </div>
+            <form id="addExpenseForm">
+                <div class="form-group">
+                    <label for="expenseName">Name</label>
+                    <input type="text" id="expenseName" required>
+                </div>
+                <div class="form-group">
+                    <label for="expenseCategory">Category</label>
+                    <select id="expenseCategory" required>
+                        <option value="">Select category</option>
+                        <option value="Housing">Housing</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Groceries">Groceries</option>
+                        <option value="Insurance">Insurance</option>
+                        <option value="Debt Payments">Debt Payments</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Dining Out">Dining Out</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Hobbies">Hobbies</option>
+                        <option value="Subscriptions">Subscriptions</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="expenseAmount">Amount</label>
+                    <input type="number" id="expenseAmount" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="expenseDate">Date Paid</label>
+                    <input type="date" id="expenseDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="expenseNotes">Notes (optional)</label>
+                    <textarea id="expenseNotes" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Add Expense</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="updateBalanceModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Balance Manually</h3>
+                <button class="modal-close" id="closeBalanceModal">&times;</button>
+            </div>
+            <form id="updateBalanceForm">
+                <div class="form-group">
+                    <label for="newBalance">New Balance</label>
+                    <input type="number" id="newBalance" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="balanceReason">Reason (optional)</label>
+                    <input type="text" id="balanceReason" placeholder="Manual adjustment">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Update Balance</button>
+            </form>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script src="/js/global.js"></script>
+    <script src="/js/partials.js"></script>
+    <script src="/js/confirmations.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

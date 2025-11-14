@@ -1,0 +1,153 @@
+.household-section,
+.password-section,
+.balance-section,
+.preferences-section,
+.data-section,
+.danger-section {
+  margin-bottom: 24px;
+}
+
+.form-note {
+  display: block;
+  font-size: 14px;
+  color: var(--text-light);
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.balance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: var(--bg-light);
+  border-radius: 4px;
+}
+
+.balance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.balance-label {
+  font-weight: 500;
+  color: var(--text-light);
+}
+
+.balance-value {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.data-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.danger-card {
+  border-left: 4px solid var(--danger);
+  background-color: #fff5f5;
+}
+
+.danger-card h2 {
+  color: var(--danger);
+}
+
+.danger-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.warning-text {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #fff3cd;
+  border-left: 4px solid var(--warning);
+  border-radius: 4px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.history-date {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.history-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.history-reason {
+  font-weight: 500;
+  flex: 1;
+}
+
+.history-amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.history-change {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.history-balance {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+@media (min-width: 768px) {
+  .data-actions,
+  .danger-actions {
+    flex-direction: row;
+  }
+
+  .balance-info {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .balance-item {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .history-item {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .history-date {
+    min-width: 120px;
+  }
+
+  .history-details {
+    flex: 1;
+  }
+}

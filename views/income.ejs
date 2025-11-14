@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+    <link rel="stylesheet" href="/css/income.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+    <%- include('partials/notification') %>
+
+    <main class="container">
+        <h1>Income Sources</h1>
+
+        <section class="total-section">
+            <div class="card total-card">
+                <div class="total-label">Total Expected Monthly Income</div>
+                <div class="total-value amount" id="totalMonthlyIncome">$0.00</div>
+                <div class="total-breakdown" id="totalBreakdown">Based on 0 active income sources</div>
+            </div>
+        </section>
+
+        <section class="add-section">
+            <div class="card">
+                <h2>Add New Income Source</h2>
+                <form id="addIncomeForm">
+                    <div class="form-group">
+                        <label for="sourceName">Source Name</label>
+                        <input type="text" id="sourceName" placeholder="John - Main Job" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" step="0.01" min="0" placeholder="2400" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="frequency">Frequency</label>
+                        <select id="frequency" required>
+                            <option value="">Select frequency</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="biweekly">Biweekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="irregular">Irregular</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="nextPaydayGroup">
+                        <label for="nextPayday">Next Payday</label>
+                        <input type="date" id="nextPayday">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="active" checked>
+                            <span>Active</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Add Income Source</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="sources-section">
+            <div class="card">
+                <h2>Current Income Sources</h2>
+                <div id="incomeSourcesList" class="sources-list"></div>
+            </div>
+        </section>
+
+        <section class="info-section">
+            <div class="card info-card">
+                <h3>How It Works</h3>
+                <p>Add your income sources here. On payday, we'll prompt you to confirm you received the money. This keeps your balance accurate.</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="editIncomeModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Income Source</h3>
+                <button class="modal-close" id="closeEditModal">&times;</button>
+            </div>
+            <form id="editIncomeForm">
+                <input type="hidden" id="editIncomeId">
+                
+                <div class="form-group">
+                    <label for="editSourceName">Source Name</label>
+                    <input type="text" id="editSourceName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editAmount">Amount</label>
+                    <input type="number" id="editAmount" step="0.01" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editFrequency">Frequency</label>
+                    <select id="editFrequency" required>
+                        <option value="weekly">Weekly</option>
+                        <option value="biweekly">Biweekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="irregular">Irregular</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="editNextPaydayGroup">
+                    <label for="editNextPayday">Next Payday</label>
+                    <input type="date" id="editNextPayday">
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editActive">
+                        <span>Active</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Update Income Source</button>
+            </form>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script src="/js/global.js"></script>
+    <script src="/js/partials.js"></script>
+    <script src="/js/income.js"></script>
+</body>
+</html>

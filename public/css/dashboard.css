@@ -1,0 +1,284 @@
+main {
+  padding-bottom: 40px;
+}
+
+h1 {
+  margin-bottom: 24px;
+}
+
+.pending-section {
+  margin-bottom: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-header h2 {
+  margin: 0;
+}
+
+.confirmations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.confirmation-item {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: #fff3cd;
+}
+
+.confirmation-text {
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.confirmation-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 14px;
+  min-height: 40px;
+}
+
+.stats-section {
+  margin-bottom: 24px;
+}
+
+.stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--bg-white);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.status-card {
+  padding: 20px;
+  border-left: 4px solid;
+}
+
+.status-card.status-healthy {
+  border-color: var(--success);
+  background-color: #d4edda;
+}
+
+.status-card.status-warning {
+  border-color: var(--warning);
+  background-color: #fff3cd;
+}
+
+.status-card.status-danger {
+  border-color: var(--danger);
+  background-color: #f8d7da;
+}
+
+.status-card.status-critical {
+  border-color: var(--danger);
+  background-color: #f8d7da;
+}
+
+.status-message {
+  margin: 0;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.actions-section {
+  margin-bottom: 24px;
+}
+
+.actions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.upcoming-section,
+.recent-section {
+  margin-bottom: 24px;
+}
+
+.bills-list,
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bill-item,
+.activity-item {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bill-info,
+.activity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bill-name {
+  font-weight: 500;
+}
+
+.bill-amount {
+  color: var(--text-light);
+}
+
+.bill-due {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.activity-type {
+  font-size: 24px;
+  font-weight: 700;
+  margin-right: 8px;
+}
+
+.activity-type.income {
+  color: var(--success);
+}
+
+.activity-type.expense {
+  color: var(--danger);
+}
+
+.activity-reason {
+  font-weight: 500;
+}
+
+.activity-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.activity-date {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-light);
+  padding: 20px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--bg-white);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text-light);
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: var(--text-dark);
+}
+
+.modal form {
+  padding: 20px;
+}
+
+@media (min-width: 768px) {
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .confirmation-actions {
+    flex-direction: row;
+  }
+
+  .actions-grid {
+    flex-direction: row;
+  }
+
+  .bill-info,
+  .activity-info {
+    flex-direction: row;
+    gap: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

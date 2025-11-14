@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+    <link rel="stylesheet" href="/css/register.css">
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <h1>Create Account</h1>
+            <p class="register-subtitle">Budget Tracker - Household Registration</p>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="householdName">Household Name</label>
+                    <input type="text" id="householdName" name="householdName" placeholder="The Smith Family" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="smiths" required minlength="3" autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required minlength="6" autocomplete="new-password">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6" autocomplete="new-password">
+                </div>
+
+                <div class="security-section">
+                    <h3>Security Questions</h3>
+                    <p class="security-note">Choose 2 questions. You'll need these to reset your password.</p>
+
+                    <div class="form-group">
+                        <label for="question1">Question 1</label>
+                        <select id="question1" required>
+                            <option value="">Select a question</option>
+                            <option value="What was your first pet's name?">What was your first pet's name?</option>
+                            <option value="What city were you born in?">What city were you born in?</option>
+                            <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                            <option value="What was the name of your first school?">What was the name of your first school?</option>
+                            <option value="What is your favorite movie?">What is your favorite movie?</option>
+                            <option value="What was your childhood nickname?">What was your childhood nickname?</option>
+                            <option value="What street did you grow up on?">What street did you grow up on?</option>
+                            <option value="What is your father's middle name?">What is your father's middle name?</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="answer1">Answer 1</label>
+                        <input type="text" id="answer1" required minlength="2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="question2">Question 2</label>
+                        <select id="question2" required>
+                            <option value="">Select a question</option>
+                            <option value="What was your first pet's name?">What was your first pet's name?</option>
+                            <option value="What city were you born in?">What city were you born in?</option>
+                            <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                            <option value="What was the name of your first school?">What was the name of your first school?</option>
+                            <option value="What is your favorite movie?">What is your favorite movie?</option>
+                            <option value="What was your childhood nickname?">What was your childhood nickname?</option>
+                            <option value="What street did you grow up on?">What street did you grow up on?</option>
+                            <option value="What is your father's middle name?">What is your father's middle name?</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="answer2">Answer 2</label>
+                        <input type="text" id="answer2" required minlength="2">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+            </form>
+
+            <div id="errorMessage" class="error-message hidden"></div>
+
+            <div class="register-footer">
+                <p>Already have an account? <a href="/login">Login here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="recoveryCodeModal" class="modal hidden">
+        <div class="modal-content recovery-modal">
+            <div class="modal-header">
+                <h3>⚠️ IMPORTANT - Save Your Recovery Code</h3>
+            </div>
+            <div class="modal-body">
+                <div class="recovery-code-display">
+                    <p class="recovery-warning">Write this down RIGHT NOW. Screenshot it. Save it somewhere safe.</p>
+                    <p class="recovery-warning"><strong>This is the ONLY way to reset your password if you forget your security questions.</strong></p>
+                    
+                    <div class="recovery-code-box">
+                        <div class="recovery-code" id="recoveryCodeText"></div>
+                        <button class="btn btn-primary btn-sm" id="copyCodeBtn">Copy Code</button>
+                    </div>
+
+                    <div class="recovery-checklist">
+                        <p><strong>Did you save it?</strong></p>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="confirmSaved">
+                            <span>Yes, I saved my recovery code in a safe place</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn btn-success btn-block" id="continueBtn" disabled>Continue to Login</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/global.js"></script>
+    <script src="/js/register.js"></script>
+</body>
+</html>

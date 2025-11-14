@@ -1,0 +1,349 @@
+.reality-section {
+  margin-bottom: 24px;
+}
+
+.reality-card {
+  padding: 30px;
+  border-left: 6px solid;
+}
+
+.reality-card.status-healthy {
+  border-color: var(--success);
+  background-color: #d4edda;
+}
+
+.reality-card.status-warning {
+  border-color: var(--warning);
+  background-color: #fff3cd;
+}
+
+.reality-card.status-danger {
+  border-color: var(--danger);
+  background-color: #f8d7da;
+}
+
+.reality-card.status-critical {
+  border-color: var(--danger);
+  background-color: #f8d7da;
+}
+
+.reality-card h2 {
+  margin-bottom: 24px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.reality-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.reality-stat {
+  text-align: center;
+}
+
+.reality-label {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.reality-value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.reality-message {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+}
+
+.trend-section,
+.breakdown-section,
+.trends-section,
+.leaks-section,
+.savings-section,
+.reports-section {
+  margin-bottom: 24px;
+}
+
+.chart-container {
+  position: relative;
+  margin-bottom: 24px;
+  min-height: 300px;
+}
+
+.trend-message {
+  text-align: center;
+  padding: 16px;
+  background-color: var(--bg-light);
+  border-radius: 4px;
+  margin-top: 16px;
+}
+
+.breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.breakdown-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.breakdown-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.breakdown-category {
+  font-weight: 500;
+}
+
+.breakdown-bar {
+  height: 24px;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.breakdown-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.breakdown-amount {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.breakdown-percent {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.brutal-message {
+  padding: 20px;
+  background-color: #fff3cd;
+  border-left: 4px solid var(--warning);
+  border-radius: 4px;
+}
+
+.brutal-message p {
+  margin: 8px 0;
+}
+
+.trends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.trend-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 4px;
+  border-left: 4px solid;
+}
+
+.trend-item.stable {
+  border-color: var(--text-light);
+  background-color: var(--bg-light);
+}
+
+.trend-item.trending-up {
+  border-color: var(--warning);
+  background-color: #fff3cd;
+}
+
+.trend-item.trending-down {
+  border-color: var(--success);
+  background-color: #d4edda;
+}
+
+.trend-item.spike {
+  border-color: var(--danger);
+  background-color: #f8d7da;
+}
+
+.trend-icon {
+  font-size: 24px;
+  min-width: 32px;
+  text-align: center;
+}
+
+.trend-message {
+  flex: 1;
+}
+
+.leaks-card {
+  background-color: #fff3cd;
+  border-left: 4px solid var(--danger);
+}
+
+.leaks-card h2 {
+  margin-bottom: 8px;
+}
+
+.leaks-subtitle {
+  margin-bottom: 20px;
+  color: var(--text-light);
+}
+
+.leaks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.leak-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: white;
+  border-radius: 4px;
+}
+
+.leak-name {
+  font-weight: 500;
+}
+
+.leak-amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.leak-monthly {
+  font-weight: 600;
+}
+
+.leak-yearly {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.leaks-summary {
+  margin-top: 20px;
+  padding: 16px;
+  background-color: white;
+  border-radius: 4px;
+}
+
+.leaks-summary p {
+  margin: 8px 0;
+}
+
+.savings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.savings-item {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.savings-month {
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.savings-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.savings-stat {
+  display: flex;
+  justify-content: space-between;
+}
+
+.savings-label {
+  color: var(--text-light);
+}
+
+.savings-message {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 4px;
+  border-left: 4px solid;
+}
+
+.savings-message.alert {
+  border-color: var(--danger);
+  background-color: #f8d7da;
+}
+
+.savings-message.success {
+  border-color: var(--success);
+  background-color: #d4edda;
+}
+
+.savings-message p {
+  margin: 8px 0;
+}
+
+.savings-alert {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.reports-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .reality-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .reality-value {
+    font-size: 32px;
+  }
+
+  .breakdown-item {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .breakdown-info {
+    flex: 1;
+  }
+
+  .breakdown-stats {
+    min-width: 200px;
+  }
+
+  .reports-actions {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 1024px) {
+  .reality-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .reality-card h2 {
+    font-size: 28px;
+  }
+}
