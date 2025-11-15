@@ -37,6 +37,7 @@ const parseReceiptText = (text) => {
     merchant: null
   };
   
+  // Extract amount
   const amountPatterns = [
     /\$\s*(\d{1,5}(?:,\d{3})*(?:\.\d{2}))/g,
     /total[:\s]*\$?\s*(\d{1,5}(?:,\d{3})*(?:\.\d{2}))/gi,
@@ -58,6 +59,7 @@ const parseReceiptText = (text) => {
     parsedData.amount = Math.max(...amounts);
   }
   
+  // Extract date
   const datePatterns = [
     /(\d{1,2}\/\d{1,2}\/\d{2,4})/,
     /(\d{1,2}-\d{1,2}-\d{2,4})/,
@@ -77,15 +79,39 @@ const parseReceiptText = (text) => {
     }
   }
   
-  const lines = text.split('\n').filter(line => line.trim().length > 0);
-  if (lines.length > 0) {
-    const firstLines = lines.slice(0, 3).join(' ');
-    const businessIndicators = /(LLC|Inc|Corp|Ltd|Store|Shop|Market)/i;
-    if (businessIndicators.test(firstLines)) {
-      parsedData.merchant = firstLines.substring(0, 100);
-    } else {
-      parsedData.merchant = lines[0].substring(0, 100);
+  // Extract merchant - improved logic
+  const lines = text.split(/\n+/).map(l => l.trim()).filter(l => l.length > 2);
+  
+  for (let i = 0; i < Math.min(5, lines.length); i++) {
+    const line = lines[i];
+    
+    // Skip common non-merchant patterns
+    if (line.match(/^(receipt|invoice|date|time|thank|customer|copy|original)/i)) continue;
+    if (line.match(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/)) continue; // Skip dates
+    if (line.match(/^\d+$/)) continue; // Skip pure numbers
+    if (line.match(/^[\d\s\-\/\.,]+$/)) continue; // Skip number-heavy lines
+    if (line.length < 3) continue; // Too short
+    
+    // Check if line has business indicators
+    if (line.match(/(LLC|Inc|Corp|Ltd|Co\.|Company|Store|Shop|Market|Depot|Station)/i)) {
+      parsedData.merchant = line.substring(0, 50).trim();
+      break;
     }
+    
+    // If no business indicator found in first few lines, take first substantive line
+    if (i === 0 && line.length >= 3 && line.length <= 50) {
+      // Extract just the business name (before address/phone)
+      const namePart = line.split(/\d{3,}/)[0].trim(); // Split before phone/address numbers
+      if (namePart.length >= 3) {
+        parsedData.merchant = namePart.substring(0, 50).trim();
+      }
+    }
+  }
+  
+  // If still no merchant, take first line as fallback
+  if (!parsedData.merchant && lines.length > 0) {
+    const firstLine = lines[0].split(/\d{3,}/)[0].trim();
+    parsedData.merchant = firstLine.substring(0, 50).trim();
   }
   
   return parsedData;

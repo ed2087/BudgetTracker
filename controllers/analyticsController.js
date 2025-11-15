@@ -55,12 +55,16 @@ exports.getOverview = async (req, res) => {
 
     const savingsRate = calculateSavingsRate(expenses, totalIncome, 3);
 
+    const balance = await Balance.findOne({ userId: req.user._id });
+    const currentBalance = balance ? balance.currentBalance : 0;
+
     res.json({
       success: true,
       currentMonth: {
         income: totalIncome,
         expenses: totalExpenses,
         difference,
+        currentBalance,
         status
       },
       lastSixMonths,

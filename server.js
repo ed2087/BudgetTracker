@@ -67,6 +67,10 @@ app.get('/forgot-password', (req, res) => {
   res.render('forgot-password');
 });
 
+app.get('/faq', (req, res) => {
+  res.render('faq');
+});
+
 app.get('/', (req, res) => {
   res.redirect('/dashboard');
 });

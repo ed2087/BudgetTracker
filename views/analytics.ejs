@@ -11,6 +11,7 @@
     <main class="container">
         <h1>Analytics</h1>
 
+        <!-- REALITY CHECK -->
         <section class="reality-section">
             <div class="card reality-card" id="realityCard">
                 <h2>REALITY CHECK</h2>
@@ -36,42 +37,49 @@
             </div>
         </section>
 
-        <section class="trend-section">
-            <div class="card">
-                <h2>Income vs Expenses Trend</h2>
-                <div class="chart-container">
-                    <canvas id="trendChart"></canvas>
+        <!-- CHARTS SIDE BY SIDE -->
+        <div class="charts-grid">
+            <section class="trend-section">
+                <div class="card">
+                    <h2>Income vs Expenses Trend</h2>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                    <div class="trend-message" id="trendMessage"></div>
                 </div>
-                <div class="trend-message" id="trendMessage"></div>
-            </div>
-        </section>
+            </section>
 
-        <section class="breakdown-section">
-            <div class="card">
-                <h2>Where Your Money Goes This Month</h2>
-                <div class="chart-container">
-                    <canvas id="categoryChart"></canvas>
+            <section class="breakdown-section">
+                <div class="card">
+                    <h2>Where Your Money Goes This Month</h2>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="breakdown-list" id="categoryBreakdown"></div>
+                    <div class="brutal-message" id="brutalMessage"></div>
                 </div>
-                <div class="breakdown-list" id="categoryBreakdown"></div>
-                <div class="brutal-message" id="brutalMessage"></div>
-            </div>
-        </section>
+            </section>
+        </div>
 
-        <section class="trends-section">
-            <div class="card">
-                <h2>Category Trends</h2>
-                <div id="categoryTrends" class="trends-list"></div>
-            </div>
-        </section>
+        <!-- TRENDS AND LEAKS SIDE BY SIDE -->
+        <div class="trends-leaks-grid">
+            <section class="trends-section">
+                <div class="card">
+                    <h2>Category Trends</h2>
+                    <div id="categoryTrends" class="trends-list"></div>
+                </div>
+            </section>
 
-        <section class="leaks-section">
-            <div class="card leaks-card">
-                <h2>💸 MONEY LEAKS</h2>
-                <p class="leaks-subtitle">Small expenses that add up</p>
-                <div id="moneyLeaks" class="leaks-list"></div>
-            </div>
-        </section>
+            <section class="leaks-section">
+                <div class="card leaks-card">
+                    <h2>💸 MONEY LEAKS</h2>
+                    <p class="leaks-subtitle">Small expenses that add up</p>
+                    <div id="moneyLeaks" class="leaks-list"></div>
+                </div>
+            </section>
+        </div>
 
+        <!-- SAVINGS RATE -->
         <section class="savings-section">
             <div class="card">
                 <h2>Savings Rate (Last 3 Months)</h2>
@@ -80,6 +88,7 @@
             </div>
         </section>
 
+        <!-- DOWNLOAD REPORTS -->
         <section class="reports-section">
             <div class="card">
                 <h2>Download Reports</h2>

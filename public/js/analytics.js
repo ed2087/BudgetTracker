@@ -28,7 +28,7 @@ function displayAnalytics(data) {
 }
 
 function displayRealityCheck(data) {
-  document.getElementById('currentBalance').textContent = formatCurrency(data.income - data.expenses);
+  document.getElementById('currentBalance').textContent = formatCurrency(data.currentBalance);
   document.getElementById('monthlyIncome').textContent = formatCurrency(data.income);
   document.getElementById('monthlyExpenses').textContent = formatCurrency(data.expenses);
   

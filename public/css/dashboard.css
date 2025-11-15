@@ -103,6 +103,7 @@ h1 {
 .status-card.status-critical {
   border-color: var(--danger);
   background-color: #f8d7da;
+  display: none;
 }
 
 .status-message {

@@ -311,6 +311,7 @@
   gap: 12px;
 }
 
+/* TABLET AND DESKTOP IMPROVEMENTS */
 @media (min-width: 768px) {
   .reality-stats {
     grid-template-columns: repeat(2, 1fr);
@@ -318,6 +319,39 @@
 
   .reality-value {
     font-size: 32px;
+  }
+
+  /* Charts side by side */
+  .charts-grid {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .charts-grid > section {
+    flex: 1;
+  }
+
+  /* Trends and leaks side by side */
+  .trends-leaks-grid {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .trends-leaks-grid .trends-section {
+    flex: 1.2;
+  }
+  
+  .trends-leaks-grid .leaks-section {
+    flex: 1;
+  }
+
+  /* Savings horizontal */
+  .savings-list {
+    flex-direction: row;
+  }
+
+  .savings-item {
+    flex: 1;
   }
 
   .breakdown-item {
@@ -345,5 +379,22 @@
 
   .reality-card h2 {
     font-size: 28px;
+  }
+
+  .charts-grid {
+    gap: 30px;
+  }
+
+  .trends-leaks-grid {
+    gap: 30px;
+  }
+  
+  .trends-leaks-grid .trends-section,
+  .trends-leaks-grid .leaks-section {
+    flex: 1;
+  }
+
+  .savings-list {
+    gap: 20px;
   }
 }

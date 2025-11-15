@@ -139,7 +139,7 @@ function setupForms() {
     e.preventDefault();
 
     const data = {
-      confirmPassword: document.getElementById('confirmPassword').value
+      confirmPassword: document.getElementById('deleteConfirmPassword').value
     };
 
     try {
@@ -159,6 +159,7 @@ function setupForms() {
       showError(error.message);
     }
   });
+
 }
 
 function setupModals() {

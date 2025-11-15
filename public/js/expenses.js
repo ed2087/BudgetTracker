@@ -1,7 +1,7 @@
 let currentPage = 1;
+let totalPages = 1;
 let currentFilters = {
-  startDate: null,
-  endDate: null,
+  month: '',
   category: '',
   type: ''
 };
@@ -9,40 +9,125 @@ let currentFilters = {
 document.addEventListener('DOMContentLoaded', () => {
   initializePage();
   setupForms();
-  setupDateRangeListener();
+  setupFilters();
+  setupPagination();
+  setupModals();
 });
 
 function initializePage() {
   const now = new Date();
   document.getElementById('expenseDate').valueAsDate = now;
   
-  setThisMonthDates();
+  // Don't set default month filter - show all expenses
+  const filterMonth = document.getElementById('filterMonth');
+  const currentMonth = now.getMonth();
+  filterMonth.value = currentMonth;
+  // Leave currentFilters.month empty to show all by default
+  currentFilters.month = '';
+  
   loadExpenses();
   loadSummary();
 }
 
-function setThisMonthDates() {
-  const now = new Date();
-  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+function setupForms() {
+  const quickAddForm = document.getElementById('quickAddForm');
+
+  quickAddForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await addExpense();
+  });
+}
+
+function setupFilters() {
+  const applyBtn = document.getElementById('applyFiltersBtn');
+  const sortBy = document.getElementById('sortBy');
+
+  applyBtn.addEventListener('click', () => {
+    applyFilters();
+  });
+
+  sortBy.addEventListener('change', () => {
+    loadExpenses();
+  });
+}
+
+function setupPagination() {
+  const prevBtn = document.getElementById('prevPageBtn');
+  const nextBtn = document.getElementById('nextPageBtn');
+
+  prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      loadExpenses();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      loadExpenses();
+    }
+  });
+}
+
+function setupModals() {
+  const uploadBtn = document.getElementById('uploadReceiptBtn');
+  const closeDetailBtn = document.getElementById('closeDetailModal');
+
+  if (uploadBtn) {
+    uploadBtn.addEventListener('click', () => {
+      document.getElementById('receiptModal').classList.remove('hidden');
+    });
+  }
+
+  if (closeDetailBtn) {
+    closeDetailBtn.addEventListener('click', () => {
+      document.getElementById('expenseDetailModal').classList.add('hidden');
+    });
+  }
+}
+
+function applyFilters() {
+  currentFilters.month = document.getElementById('filterMonth').value;
+  currentFilters.category = document.getElementById('filterCategory').value;
+  currentFilters.type = document.getElementById('filterType').value;
   
-  currentFilters.startDate = firstDay.toISOString().split('T')[0];
-  currentFilters.endDate = lastDay.toISOString().split('T')[0];
+  currentPage = 1;
+  loadExpenses();
 }
 
 async function loadExpenses() {
   try {
     const params = new URLSearchParams({
       page: currentPage,
-      limit: 20,
-      ...currentFilters
+      limit: 20
     });
+
+    // Only filter by month if a specific month is selected
+    if (currentFilters.month !== '' && currentFilters.month !== 'all') {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = parseInt(currentFilters.month);
+      const startDate = new Date(year, month, 1);
+      const endDate = new Date(year, month + 1, 0);
+      
+      params.append('startDate', startDate.toISOString().split('T')[0]);
+      params.append('endDate', endDate.toISOString().split('T')[0]);
+    }
+
+    if (currentFilters.category) {
+      params.append('category', currentFilters.category);
+    }
+
+    if (currentFilters.type) {
+      params.append('type', currentFilters.type);
+    }
 
     const response = await fetchAPI(`/expenses?${params}`);
     
     if (response.success) {
       displayExpenses(response.expenses);
-      displayPagination(response.page, response.pages);
+      updatePagination(response.page, response.pages);
     }
   } catch (error) {
     showError('Failed to load expenses');
@@ -63,10 +148,26 @@ async function loadSummary() {
 }
 
 function displaySummary(data) {
-  document.getElementById('summaryTotal').textContent = formatCurrency(data.totalExpenses);
-  document.getElementById('summaryNecessities').textContent = formatCurrency(data.necessities);
-  document.getElementById('summaryLuxuries').textContent = formatCurrency(data.luxuries);
-  document.getElementById('summaryCount').textContent = data.transactionCount;
+  document.getElementById('totalExpenses').textContent = formatCurrency(data.totalExpenses);
+  
+  const necessitiesEl = document.getElementById('necessities');
+  const luxuriesEl = document.getElementById('luxuries');
+  
+  const total = data.totalExpenses;
+  const necPercent = total > 0 ? ((data.necessities / total) * 100).toFixed(0) : 0;
+  const luxPercent = total > 0 ? ((data.luxuries / total) * 100).toFixed(0) : 0;
+  
+  necessitiesEl.innerHTML = `
+    <span class="amount">${formatCurrency(data.necessities)}</span>
+    <span class="percentage">(${necPercent}%)</span>
+  `;
+  
+  luxuriesEl.innerHTML = `
+    <span class="amount">${formatCurrency(data.luxuries)}</span>
+    <span class="percentage">(${luxPercent}%)</span>
+  `;
+  
+  document.getElementById('transactionCount').textContent = data.transactionCount;
 }
 
 function displayExpenses(expenses) {
@@ -113,112 +214,23 @@ function getCategoryIcon(category) {
     'Clothing': '👕',
     'Hobbies': '🎨',
     'Subscriptions': '📱',
-    'Shopping': '🛍️',
+    'Shopping': '�️',
     'Other': '📦'
   };
   return icons[category] || '📦';
 }
 
-function displayPagination(page, totalPages) {
-  const container = document.getElementById('pagination');
-  
-  if (totalPages <= 1) {
-    container.innerHTML = '';
-    return;
-  }
-
-  let html = '<div class="pagination-controls">';
-  
-  if (page > 1) {
-    html += `<button class="btn btn-sm" onclick="changePage(${page - 1})">Previous</button>`;
-  }
-  
-  html += `<span class="pagination-info">Page ${page} of ${totalPages}</span>`;
-  
-  if (page < totalPages) {
-    html += `<button class="btn btn-sm" onclick="changePage(${page + 1})">Next</button>`;
-  }
-  
-  html += '</div>';
-  container.innerHTML = html;
-}
-
-function changePage(page) {
+function updatePagination(page, pages) {
   currentPage = page;
-  loadExpenses();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function setupForms() {
-  const filtersForm = document.getElementById('filtersForm');
-  const quickAddForm = document.getElementById('quickAddForm');
-  const uploadBtn = document.getElementById('uploadReceiptBtn');
-
-  filtersForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    applyFilters();
-  });
-
-  quickAddForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    await addExpense();
-  });
-
-  uploadBtn.addEventListener('click', () => {
-    document.getElementById('receiptModal').classList.remove('hidden');
-  });
-}
-
-function setupDateRangeListener() {
-  const dateRangeSelect = document.getElementById('filterDateRange');
-  const customDateRange = document.getElementById('customDateRange');
-
-  dateRangeSelect.addEventListener('change', () => {
-    if (dateRangeSelect.value === 'custom') {
-      customDateRange.classList.remove('hidden');
-    } else {
-      customDateRange.classList.add('hidden');
-      updateDateRange(dateRangeSelect.value);
-    }
-  });
-}
-
-function updateDateRange(range) {
-  const now = new Date();
-  let startDate, endDate;
-
-  switch(range) {
-    case 'this-month':
-      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      break;
-    case 'last-month':
-      startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      endDate = new Date(now.getFullYear(), now.getMonth(), 0);
-      break;
-    case 'last-3-months':
-      startDate = new Date(now.getFullYear(), now.getMonth() - 3, 1);
-      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      break;
-  }
-
-  currentFilters.startDate = startDate.toISOString().split('T')[0];
-  currentFilters.endDate = endDate.toISOString().split('T')[0];
-}
-
-function applyFilters() {
-  const dateRange = document.getElementById('filterDateRange').value;
+  totalPages = pages;
   
-  if (dateRange === 'custom') {
-    currentFilters.startDate = document.getElementById('startDate').value;
-    currentFilters.endDate = document.getElementById('endDate').value;
-  }
+  const prevBtn = document.getElementById('prevPageBtn');
+  const nextBtn = document.getElementById('nextPageBtn');
+  const pageInfo = document.getElementById('pageInfo');
   
-  currentFilters.category = document.getElementById('filterCategory').value;
-  currentFilters.type = document.getElementById('filterType').value;
-  
-  currentPage = 1;
-  loadExpenses();
+  prevBtn.disabled = (page <= 1);
+  nextBtn.disabled = (page >= pages);
+  pageInfo.textContent = `Page ${page} of ${pages}`;
 }
 
 async function addExpense() {
@@ -240,6 +252,8 @@ async function addExpense() {
     showSuccess('Expense added successfully');
     document.getElementById('quickAddForm').reset();
     document.getElementById('expenseDate').valueAsDate = new Date();
+    
+    // Reload with current filters
     loadExpenses();
     loadSummary();
   } catch (error) {
@@ -260,39 +274,39 @@ async function viewExpense(id) {
 }
 
 function displayExpenseDetail(expense) {
-  const content = document.getElementById('expenseDetailContent');
+  const content = document.getElementById('expenseDetail');
   
   content.innerHTML = `
     <div class="detail-section">
       <div class="detail-row">
-        <span class="detail-label">Name:</span>
+        <span class="detail-label">Name</span>
         <span class="detail-value">${expense.name}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Category:</span>
+        <span class="detail-label">Category</span>
         <span class="detail-value">${expense.category}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Amount:</span>
+        <span class="detail-label">Amount</span>
         <span class="detail-value amount">${formatCurrency(expense.amount)}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Date Paid:</span>
+        <span class="detail-label">Date Paid</span>
         <span class="detail-value">${formatDate(expense.paidDate)}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Type:</span>
+        <span class="detail-label">Type</span>
         <span class="detail-value">${expense.type}</span>
       </div>
       ${expense.notes ? `
         <div class="detail-row">
-          <span class="detail-label">Notes:</span>
+          <span class="detail-label">Notes</span>
           <span class="detail-value">${expense.notes}</span>
         </div>
       ` : ''}
       ${expense.receiptText ? `
         <div class="detail-row">
-          <span class="detail-label">Receipt Text:</span>
+          <span class="detail-label">Receipt Text</span>
           <div class="receipt-text">${expense.receiptText}</div>
         </div>
       ` : ''}
@@ -319,11 +333,3 @@ async function deleteExpense(id) {
     showError(error.message);
   }
 }
-
-document.getElementById('closeReceiptModal')?.addEventListener('click', () => {
-  document.getElementById('receiptModal').classList.add('hidden');
-});
-
-document.getElementById('closeDetailModal')?.addEventListener('click', () => {
-  document.getElementById('expenseDetailModal').classList.add('hidden');
-});

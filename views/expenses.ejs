@@ -1,109 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%- include('partials/head') %>
+    <%- include('partials/head', { title: 'Expenses' }) %>
     <link rel="stylesheet" href="/css/expenses.css">
 </head>
 <body>
     <%- include('partials/navbar') %>
     <%- include('partials/notification') %>
 
-    <main class="container">
-        <h1>Expenses</h1>
+    <div class="container">
+        <div class="page-header">
+            <h1>💸 Expenses</h1>
+            <button class="btn btn-primary btn-icon" id="uploadReceiptBtn">
+                <span class="icon">📸</span>
+                <span>Scan Receipt</span>
+            </button>
+        </div>
 
-        <section class="filters-section">
-            <div class="card">
-                <h3>Filters</h3>
-                <form id="filtersForm" class="filters-form">
-                    <div class="form-group">
-                        <label for="filterDateRange">Date Range</label>
-                        <select id="filterDateRange">
-                            <option value="this-month">This Month</option>
-                            <option value="last-month">Last Month</option>
-                            <option value="last-3-months">Last 3 Months</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </div>
-
-                    <div id="customDateRange" class="custom-date-range hidden">
-                        <div class="form-group">
-                            <label for="startDate">Start Date</label>
-                            <input type="date" id="startDate">
-                        </div>
-                        <div class="form-group">
-                            <label for="endDate">End Date</label>
-                            <input type="date" id="endDate">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="filterCategory">Category</label>
-                        <select id="filterCategory">
-                            <option value="">All Categories</option>
-                            <option value="Housing">Housing</option>
-                            <option value="Utilities">Utilities</option>
-                            <option value="Transportation">Transportation</option>
-                            <option value="Groceries">Groceries</option>
-                            <option value="Insurance">Insurance</option>
-                            <option value="Debt Payments">Debt Payments</option>
-                            <option value="Healthcare">Healthcare</option>
-                            <option value="Entertainment">Entertainment</option>
-                            <option value="Dining Out">Dining Out</option>
-                            <option value="Clothing">Clothing</option>
-                            <option value="Hobbies">Hobbies</option>
-                            <option value="Subscriptions">Subscriptions</option>
-                            <option value="Shopping">Shopping</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="filterType">Type</label>
-                        <select id="filterType">
-                            <option value="">All Types</option>
-                            <option value="recurring">Recurring</option>
-                            <option value="one-time">One-Time</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Apply Filters</button>
-                </form>
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-label">Total</div>
+                <div class="summary-value" id="totalExpenses">$0.00</div>
             </div>
-        </section>
-
-        <section class="summary-section">
-            <div class="card">
-                <h3>Monthly Summary</h3>
-                <div class="summary-grid">
-                    <div class="summary-item">
-                        <div class="summary-label">Total This Month</div>
-                        <div class="summary-value amount" id="summaryTotal">$0.00</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Necessities</div>
-                        <div class="summary-value amount" id="summaryNecessities">$0.00</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Luxuries</div>
-                        <div class="summary-value amount" id="summaryLuxuries">$0.00</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Transactions</div>
-                        <div class="summary-value" id="summaryCount">0</div>
-                    </div>
-                </div>
+            <div class="summary-card">
+                <div class="summary-label">Necessities</div>
+                <div class="summary-value" id="necessities">$0.00</div>
             </div>
-        </section>
+            <div class="summary-card">
+                <div class="summary-label">Luxuries</div>
+                <div class="summary-value" id="luxuries">$0.00</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Transactions</div>
+                <div class="summary-value" id="transactionCount">0</div>
+            </div>
+        </div>
 
-        <section class="quick-add-section">
-            <div class="card">
-                <h3>Quick Add Expense</h3>
-                <form id="quickAddForm" class="quick-add-form">
+        <div class="card">
+            <h3>Quick Add Expense</h3>
+            <form id="quickAddForm">
+                <div class="form-grid">
                     <div class="form-group">
                         <label for="expenseName">Name</label>
-                        <input type="text" id="expenseName" placeholder="Car repair - brake pads" required>
+                        <input type="text" id="expenseName" required>
                     </div>
-
                     <div class="form-group">
                         <label for="expenseCategory">Category</label>
                         <select id="expenseCategory" required>
@@ -124,69 +64,138 @@
                             <option value="Other">Other</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label for="expenseAmount">Amount</label>
-                        <input type="number" id="expenseAmount" step="0.01" min="0" required>
+                        <input type="number" id="expenseAmount" step="0.01" required>
                     </div>
-
                     <div class="form-group">
-                        <label for="expenseDate">Date Paid</label>
+                        <label for="expenseDate">Date</label>
                         <input type="date" id="expenseDate" required>
                     </div>
+                </div>
+                <div class="form-group">
+                    <label for="expenseNotes">Notes (optional)</label>
+                    <textarea id="expenseNotes" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">Add Expense</button>
+            </form>
+        </div>
 
-                    <div class="form-group">
-                        <label for="expenseNotes">Notes (optional)</label>
-                        <textarea id="expenseNotes" rows="2"></textarea>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-primary" id="uploadReceiptBtn">Upload Receipt</button>
-                        <button type="submit" class="btn btn-success">Add Expense</button>
-                    </div>
-                </form>
+        <div class="card">
+            <div class="filters-header">
+                <h3>Filter Expenses</h3>
+                <button class="btn btn-sm btn-primary" id="applyFiltersBtn">Apply</button>
             </div>
-        </section>
-
-        <section class="expenses-section">
-            <div class="card">
-                <h3>Expense List</h3>
-                <div id="expensesList" class="expenses-list"></div>
-                <div id="pagination" class="pagination"></div>
+            <div class="filters-grid">
+                <div class="form-group">
+                    <label for="filterMonth">Month</label>
+<select id="filterMonth">
+    <option value="">All Time</option>
+    <option value="0">January</option>
+    <option value="1">February</option>
+    <option value="2">March</option>
+    <option value="3">April</option>
+    <option value="4">May</option>
+    <option value="5">June</option>
+    <option value="6">July</option>
+    <option value="7">August</option>
+    <option value="8">September</option>
+    <option value="9">October</option>
+    <option value="10">November</option>
+    <option value="11">December</option>
+</select>
+                </div>
+                <div class="form-group">
+                    <label for="filterCategory">Category</label>
+                    <select id="filterCategory">
+                        <option value="">All Categories</option>
+                        <option value="Housing">Housing</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Groceries">Groceries</option>
+                        <option value="Insurance">Insurance</option>
+                        <option value="Debt Payments">Debt Payments</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Dining Out">Dining Out</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Hobbies">Hobbies</option>
+                        <option value="Subscriptions">Subscriptions</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filterType">Type</label>
+                    <select id="filterType">
+                        <option value="">All Types</option>
+                        <option value="recurring">Recurring</option>
+                        <option value="one-time">One-time</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sortBy">Sort By</label>
+                    <select id="sortBy">
+                        <option value="date-desc">Newest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="amount-desc">Highest Amount</option>
+                        <option value="amount-asc">Lowest Amount</option>
+                    </select>
+                </div>
             </div>
-        </section>
-    </main>
+        </div>
 
-    <div id="receiptModal" class="modal hidden">
-        <div class="modal-content">
+        <div class="card">
+            <h3>Expense History</h3>
+            <div id="expensesList"></div>
+            <div class="pagination">
+                <button class="btn btn-sm" id="prevPageBtn">← Previous</button>
+                <span class="pagination-info" id="pageInfo">Page 1 of 1</span>
+                <button class="btn btn-sm" id="nextPageBtn">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Upload Modal -->
+    <div id="receiptModal" class="modal-overlay hidden">
+        <div class="modal-container">
             <div class="modal-header">
-                <h3>Upload Receipt</h3>
-                <button class="modal-close" id="closeReceiptModal">&times;</button>
+                <h3>📸 Scan Receipt</h3>
+                <button class="modal-close" onclick="closeReceiptModal()">×</button>
             </div>
             <div class="modal-body">
-                <input type="file" id="receiptFile" accept="image/jpeg,image/png">
-                <div id="receiptPreview" class="receipt-preview hidden">
-                    <p class="processing">Processing receipt...</p>
+                <div class="upload-zone">
+                    <div class="upload-icon">📷</div>
+                    <p>Upload a receipt to extract data</p>
+                    <p class="upload-hint">JPG, PNG • Max 5MB</p>
+                    <input type="file" id="receiptFile" accept="image/jpeg,image/jpg,image/png" class="file-input">
+                    <label for="receiptFile" class="btn btn-primary">Choose File</label>
                 </div>
+
+                <div id="receiptPreview" class="receipt-preview hidden">
+                    <div class="spinner"></div>
+                    <p>Processing receipt...</p>
+                </div>
+
                 <div id="receiptResult" class="receipt-result hidden"></div>
             </div>
         </div>
     </div>
 
-    <div id="expenseDetailModal" class="modal hidden">
-        <div class="modal-content">
+    <!-- Expense Detail Modal -->
+    <div id="expenseDetailModal" class="modal-overlay hidden">
+        <div class="modal-container">
             <div class="modal-header">
                 <h3>Expense Details</h3>
-                <button class="modal-close" id="closeDetailModal">&times;</button>
+                <button class="modal-close" id="closeDetailModal">×</button>
             </div>
-            <div class="modal-body" id="expenseDetailContent"></div>
+            <div class="modal-body">
+                <div id="expenseDetail"></div>
+            </div>
         </div>
     </div>
 
-    <%- include('partials/footer') %>
-
     <script src="/js/global.js"></script>
-    <script src="/js/partials.js"></script>
     <script src="/js/receipt.js"></script>
     <script src="/js/expenses.js"></script>
 </body>

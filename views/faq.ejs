@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+    <link rel="stylesheet" href="/css/faq.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+    <%- include('partials/notification') %>
+
+    <main class="container">
+        <div class="faq-header">
+            <h1>Frequently Asked Questions</h1>
+            <p class="faq-subtitle">Find answers to common questions about Budget Tracker</p>
+        </div>
+
+        <div class="faq-search-section">
+            <div class="search-box">
+                <input type="text" id="faqSearch" placeholder="Search for answers..." autocomplete="off">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+
+        <div class="faq-filters">
+            <button class="filter-btn active" data-category="all">All Questions</button>
+            <button class="filter-btn" data-category="getting-started">Getting Started</button>
+            <button class="filter-btn" data-category="income">Income</button>
+            <button class="filter-btn" data-category="expenses">Expenses</button>
+            <button class="filter-btn" data-category="recurring">Recurring Bills</button>
+            <button class="filter-btn" data-category="balance">Balance</button>
+            <button class="filter-btn" data-category="analytics">Analytics</button>
+            <button class="filter-btn" data-category="account">Account & Security</button>
+        </div>
+
+        <div class="faq-content">
+            <div id="noResults" class="no-results hidden">
+                <p>No questions found matching your search.</p>
+            </div>
+
+            <!-- Getting Started -->
+            <div class="faq-category" data-category="getting-started">
+                <h2 class="category-title">Getting Started</h2>
+                
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I get started with Budget Tracker?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Getting started is easy:</p>
+                        <ol>
+                            <li>Create your account at the registration page</li>
+                            <li>Set your starting balance in Settings → Balance Management</li>
+                            <li>Add your income sources (Settings → Income)</li>
+                            <li>Set up recurring bills (Recurring Payments page)</li>
+                            <li>Start adding expenses as they happen</li>
+                            <li>Check Analytics to see where your money goes</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What is a household login?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Budget Tracker uses a single shared login per household. This means everyone in your household (partner, roommates, family) uses the same username and password to access the budget. All members can add expenses, confirm income, and view analytics together.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What does "Current Balance" mean?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Current Balance is like your real bank account balance. It tracks the actual money you have right now. It goes UP when you confirm income received, and goes DOWN when you add expenses. This is different from "Income This Month" which is just an estimate based on your income source settings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Income -->
+            <div class="faq-category" data-category="income">
+                <h2 class="category-title">Income</h2>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I add income sources?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Go to the Income page and fill out the form:</p>
+                        <ul>
+                            <li><strong>Source Name:</strong> E.g., "John - Main Job"</li>
+                            <li><strong>Amount:</strong> How much per paycheck</li>
+                            <li><strong>Frequency:</strong> Weekly, Biweekly, Monthly, or Irregular</li>
+                            <li><strong>Next Payday:</strong> When you expect the next payment (not needed for irregular income)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>When do I get prompts to confirm income?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>On your payday, the app will create a pending confirmation asking "Did you get paid $X from [source]?". When you click "YES - Received", the money is added to your Current Balance. This keeps your balance accurate and prevents you from counting money you haven't actually received yet.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What if I got paid a different amount than expected?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Click "Different Amount" when confirming income. Enter the actual amount you received, and that's what will be added to your balance instead of the expected amount.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I handle irregular income (freelance, gig work)?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Set the frequency to "Irregular" when adding the income source. This won't create automatic prompts. Instead, manually add the income when you actually receive it by confirming it from the dashboard or adding it directly.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expenses -->
+            <div class="faq-category" data-category="expenses">
+                <h2 class="category-title">Expenses</h2>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I add an expense?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>You can add expenses from the Dashboard (+ Add Expense button) or the Expenses page. Fill in the name, category, amount, date paid, and optional notes. The expense will immediately reduce your Current Balance.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What categories are available?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p><strong>Necessities:</strong> Housing, Utilities, Transportation, Groceries, Insurance, Debt Payments, Healthcare</p>
+                        <p><strong>Luxuries:</strong> Entertainment, Dining Out, Clothing, Hobbies, Subscriptions, Shopping, Other</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Can I upload receipts?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! On the Expenses page, click "Upload Receipt" and select a JPG or PNG image (max 5MB). The app will use OCR to extract the amount, date, and merchant name. You can then accept the extracted data or enter manually. <strong>Important:</strong> We delete the image immediately after processing and only save the extracted text for your records.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What happens to my receipt images?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Receipt images are deleted immediately after text extraction. We never store images. Only the extracted text (amount, date, merchant) is saved in your expense record for reference.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recurring Bills -->
+            <div class="faq-category" data-category="recurring">
+                <h2 class="category-title">Recurring Bills</h2>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do recurring payment templates work?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Set up templates for bills that repeat monthly (rent, utilities, subscriptions). On the due day each month, you'll get a confirmation prompt: "Is the Rent ($1,200) paid this month?" When you confirm, it creates an actual expense and updates your balance. This keeps you accountable for regular bills.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What if I paid a bill on a different date than the due date?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>When confirming the expense, you'll be asked "When did you pay it?" Select the actual date you paid, and that's what will be recorded in your expense history.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Can I skip a month for a recurring bill?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! When you get the confirmation prompt, click "SKIP THIS MONTH" and it won't prompt you again for that period or create an expense.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What does "Auto-Prompt" mean?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>When Auto-Prompt is enabled (default), the app will automatically create a pending confirmation on the due day. If you turn it off, you'll need to manually add the expense each month without prompts.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Balance -->
+            <div class="faq-category" data-category="balance">
+                <h2 class="category-title">Balance Management</h2>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I set my starting balance?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Go to Settings → Balance Management → "Update Balance Manually". Enter your current bank account balance and a reason like "Starting balance". This sets your baseline for tracking.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Why is my balance different from my bank account?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>This can happen if:</p>
+                        <ul>
+                            <li>You forgot to add an expense to the app</li>
+                            <li>You didn't confirm income you actually received</li>
+                            <li>There are pending transactions in your bank</li>
+                            <li>Bank fees or interest not tracked in the app</li>
+                        </ul>
+                        <p>Update your balance manually to match your actual bank balance, then stay consistent with logging all transactions.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Can I view my balance history?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! Go to Settings → Balance Management → "View Balance History". You'll see every change to your balance with date, reason, amount changed, and resulting balance.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What's the difference between "Current Balance" and "Income This Month"?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p><strong>Current Balance:</strong> Actual money you have right now (like your bank balance)</p>
+                        <p><strong>Income This Month:</strong> Expected income based on your income source settings (NOT actual money received)</p>
+                        <p>Only confirmed income adds to your balance. Expected income is just a projection.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics -->
+            <div class="faq-category" data-category="analytics">
+                <h2 class="category-title">Analytics & Reports</h2>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What is the "Reality Check"?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>The Reality Check shows your spending status with brutal honesty:</p>
+                        <ul>
+                            <li><strong>Green (Healthy):</strong> Spending ≤90% of income</li>
+                            <li><strong>Yellow (Warning):</strong> Spending 91-99% of income</li>
+                            <li><strong>Orange (Danger):</strong> Spending 100-110% of income</li>
+                            <li><strong>Red (Critical):</strong> Spending >110% of income</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What are "Money Leaks"?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Money Leaks are small recurring expenses (under $100/month) that add up over time. The app identifies subscriptions, memberships, and regular small purchases you might not need. It shows you how much you'd save per year if you canceled them.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I download reports?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>On the Analytics page, scroll to "Download Reports":</p>
+                        <ul>
+                            <li><strong>Monthly Report PDF:</strong> Complete summary of current month with charts</li>
+                            <li><strong>Tax Summary PDF:</strong> All expenses by category for the year</li>
+                            <li><strong>Transaction History CSV:</strong> All transactions in spreadsheet format</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What do the category trends mean?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Category trends show if your spending in each category is:</p>
+                        <ul>
+                            <li><strong>↑ Trending Up:</strong> Spending increased >20% from last month</li>
+                            <li><strong>↓ Trending Down:</strong> Spending decreased >20% from last month</li>
+                            <li><strong>🔥 Spike:</strong> Spending is >150% of 3-month average</li>
+                            <li><strong>→ Stable:</strong> Spending is consistent</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account & Security -->
+            <div class="faq-category" data-category="account">
+                <h2 class="category-title">Account & Security</h2>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I reset my password if I forgot it?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Click "Forgot Password" on the login page. You have two options:</p>
+                        <ol>
+                            <li><strong>Security Questions:</strong> Answer the 2 questions you set during registration</li>
+                            <li><strong>Recovery Code:</strong> Enter the code you saved when you created your account</li>
+                        </ol>
+                        <p>After resetting, you'll get a NEW recovery code. Save it!</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What is a recovery code?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>A recovery code is a unique code like "BT-2K9X-7M4P-3H8Q" generated when you create your account. Save it somewhere safe (screenshot, password manager, written down). You'll need it to reset your password if you forget your security question answers.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Can I change my username?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>No, usernames cannot be changed for security reasons. You can change your household name and password in Settings.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I export my data?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Go to Settings → Data Management → "Export All Data (JSON)". This downloads a complete backup of all your expenses, income, recurring templates, and balance history.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I delete all my data?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Go to Settings → Data Management → "Delete All Data". You'll need to confirm with your password. This permanently deletes all expenses, income, and recurring payments. Your account remains active but all financial data is erased. This CANNOT be undone.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-footer">
+            <h3>Still have questions?</h3>
+            <p>Contact Edgar Robledo</p>
+            <p>📧 <a href="mailto:edgar@codedevhub.com">edgar@codedevhub.com</a></p>
+            <p>📱 <a href="sms:8032097750">803-209-7750</a> (text first)</p>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script src="/js/global.js"></script>
+    <script src="/js/partials.js"></script>
+    <script src="/js/faq.js"></script>
+</body>
+</html>
