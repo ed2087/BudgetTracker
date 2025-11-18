@@ -1,15 +1,12 @@
 const Expense = require('../models/Expense');
 const Income = require('../models/Income');
 const RecurringTemplate = require('../models/RecurringTemplate');
-const Balance = require('../models/Balance');
+const PendingConfirmation = require('../models/PendingConfirmation');
 const {
-  calculateTotalMonthlyIncome,
   calculateMonthlyExpenses,
   calculateExpensesByCategory,
   calculateCategoryTrend,
-  findMoneyLeaks,
-  calculateSavingsRate,
-  calculateDailyBalance
+  findMoneyLeaks
 } = require('../services/calculations');
 const { getSpendingStatus } = require('../utils/helpers');
 
@@ -19,30 +16,71 @@ exports.getOverview = async (req, res) => {
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    const incomeSources = await Income.find({ userId: req.user._id });
-    const totalIncome = calculateTotalMonthlyIncome(incomeSources);
+    // Get CONFIRMED income only
+    const confirmedIncomeRecords = await PendingConfirmation.find({
+      userId: req.user._id,
+      type: 'income',
+      status: 'confirmed',
+      createdAt: {
+        $gte: new Date(currentYear, currentMonth, 1),
+        $lte: new Date(currentYear, currentMonth + 1, 0)
+      }
+    });
+    
+    const confirmedIncome = confirmedIncomeRecords.reduce((sum, record) => sum + record.expectedAmount, 0);
 
+    // Get expenses
     const expenses = await Expense.find({ userId: req.user._id });
     const totalExpenses = calculateMonthlyExpenses(expenses, currentMonth, currentYear);
 
-    const difference = totalIncome - totalExpenses;
-    const status = getSpendingStatus(totalExpenses, totalIncome);
+    // Calculate left this month
+    const leftThisMonth = confirmedIncome - totalExpenses;
 
+    // Get upcoming bills
+    const upcomingBills = await PendingConfirmation.find({
+      userId: req.user._id,
+      type: 'expense',
+      status: 'pending'
+    });
+    
+    const upcomingBillsTotal = upcomingBills.reduce((sum, bill) => sum + bill.expectedAmount, 0);
+    const afterBills = leftThisMonth - upcomingBillsTotal;
+
+    // Get status
+    const status = getSpendingStatus(totalExpenses, confirmedIncome);
+
+    // Last 6 months data
     const lastSixMonths = [];
     for (let i = 5; i >= 0; i--) {
       const date = new Date(currentYear, currentMonth - i);
       const month = date.getMonth();
       const year = date.getFullYear();
       
+      // Get confirmed income for this month
+      const monthConfirmedIncome = await PendingConfirmation.find({
+        userId: req.user._id,
+        type: 'income',
+        status: 'confirmed',
+        createdAt: {
+          $gte: new Date(year, month, 1),
+          $lte: new Date(year, month + 1, 0)
+        }
+      });
+      
+      const monthIncome = monthConfirmedIncome.reduce((sum, record) => sum + record.expectedAmount, 0);
+      const monthExpenses = calculateMonthlyExpenses(expenses, month, year);
+      
       lastSixMonths.push({
         month: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-        income: totalIncome,
-        expenses: calculateMonthlyExpenses(expenses, month, year)
+        income: monthIncome,
+        expenses: monthExpenses
       });
     }
 
+    // Category breakdown
     const categoryBreakdown = calculateExpensesByCategory(expenses, currentMonth, currentYear);
 
+    // Category trends
     const categories = ['Housing', 'Groceries', 'Transportation', 'Utilities', 'Entertainment', 'Subscriptions'];
     const trends = {};
     
@@ -50,30 +88,62 @@ exports.getOverview = async (req, res) => {
       trends[category] = calculateCategoryTrend(expenses, category, currentMonth, currentYear);
     });
 
+    // Money leaks
     const recurringTemplates = await RecurringTemplate.find({ userId: req.user._id });
     const moneyLeaks = findMoneyLeaks(recurringTemplates);
 
-    const savingsRate = calculateSavingsRate(expenses, totalIncome, 3);
-
-    const balance = await Balance.findOne({ userId: req.user._id });
-    const currentBalance = balance ? balance.currentBalance : 0;
+    // Savings rate (last 3 months)
+    const savingsMonthlyData = [];
+    for (let i = 2; i >= 0; i--) {
+      const date = new Date(currentYear, currentMonth - i);
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      
+      const monthConfirmedIncome = await PendingConfirmation.find({
+        userId: req.user._id,
+        type: 'income',
+        status: 'confirmed',
+        createdAt: {
+          $gte: new Date(year, month, 1),
+          $lte: new Date(year, month + 1, 0)
+        }
+      });
+      
+      const monthIncome = monthConfirmedIncome.reduce((sum, record) => sum + record.expectedAmount, 0);
+      const monthExpenses = calculateMonthlyExpenses(expenses, month, year);
+      
+      savingsMonthlyData.push({
+        month: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+        income: monthIncome,
+        expenses: monthExpenses,
+        difference: monthIncome - monthExpenses
+      });
+    }
+    
+    const savingsTotal = savingsMonthlyData.reduce((sum, data) => sum + data.difference, 0);
 
     res.json({
       success: true,
       currentMonth: {
-        income: totalIncome,
+        income: confirmedIncome,
         expenses: totalExpenses,
-        difference,
-        currentBalance,
+        difference: leftThisMonth,
+        upcomingBills: upcomingBillsTotal,
+        afterBills: afterBills,
         status
       },
       lastSixMonths,
       categoryBreakdown,
       trends,
       moneyLeaks,
-      savingsRate
+      savingsRate: {
+        monthlyData: savingsMonthlyData,
+        total: savingsTotal,
+        trend: savingsMonthlyData.length > 1 && savingsMonthlyData[savingsMonthlyData.length - 1].difference > savingsMonthlyData[0].difference ? 'improving' : 'declining'
+      }
     });
   } catch (error) {
+    console.error('Analytics overview error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -167,22 +237,12 @@ exports.getYearComparison = async (req, res) => {
 
 exports.getDailyBalance = async (req, res) => {
   try {
-    const { month, year } = req.query;
-    const targetMonth = month ? parseInt(month) : new Date().getMonth();
-    const targetYear = year ? parseInt(year) : new Date().getFullYear();
-
-    const balance = await Balance.findOne({ userId: req.user._id });
-
-    if (!balance) {
-      return res.status(404).json({ success: false, message: 'Balance not found' });
-    }
-
-    const expenses = await Expense.find({ userId: req.user._id });
-    const income = await Income.find({ userId: req.user._id });
-
-    const dailyBalances = calculateDailyBalance(balance, expenses, income, targetMonth, targetYear);
-
-    res.json({ success: true, dailyBalances });
+    // This endpoint is no longer relevant without balance tracking
+    // Return empty or remove endpoint
+    res.json({ 
+      success: false, 
+      message: 'Balance tracking has been removed. Use income/expense tracking instead.' 
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
   }

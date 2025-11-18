@@ -28,13 +28,16 @@ function displayAnalytics(data) {
 }
 
 function displayRealityCheck(data) {
-  document.getElementById('currentBalance').textContent = formatCurrency(data.currentBalance);
-  document.getElementById('monthlyIncome').textContent = formatCurrency(data.income);
-  document.getElementById('monthlyExpenses').textContent = formatCurrency(data.expenses);
+  document.getElementById('confirmedIncome').textContent = formatCurrency(data.income);
+  document.getElementById('totalExpenses').textContent = formatCurrency(data.expenses);
   
-  const diffElement = document.getElementById('difference');
-  diffElement.textContent = formatCurrency(data.difference);
-  diffElement.className = 'reality-value amount ' + (data.difference >= 0 ? 'text-success' : 'text-danger');
+  const leftThisMonth = document.getElementById('leftThisMonth');
+  leftThisMonth.textContent = formatCurrency(data.difference);
+  leftThisMonth.className = 'reality-value amount ' + (data.difference >= 0 ? 'text-success' : 'text-danger');
+  
+  const afterBillsEl = document.getElementById('afterBills');
+  afterBillsEl.textContent = formatCurrency(data.afterBills);
+  afterBillsEl.className = 'reality-value amount ' + (data.afterBills >= 0 ? 'text-success' : 'text-danger');
 
   const card = document.getElementById('realityCard');
   const statusMessage = document.getElementById('statusMessage');
@@ -70,14 +73,14 @@ function displayTrendChart(data) {
       labels: data.map(d => d.month),
       datasets: [
         {
-          label: 'Income',
+          label: 'Money In (Confirmed)',
           data: data.map(d => d.income),
           borderColor: '#28a745',
           backgroundColor: 'rgba(40, 167, 69, 0.1)',
           tension: 0.3
         },
         {
-          label: 'Expenses',
+          label: 'Money Out (Spent)',
           data: data.map(d => d.expenses),
           borderColor: '#dc3545',
           backgroundColor: 'rgba(220, 53, 69, 0.1)',
@@ -187,7 +190,7 @@ function displayCategoryBreakdown(data) {
     
     document.getElementById('brutalMessage').innerHTML = `
       <p><strong>You spent ${formatCurrency(luxuryTotal)} on non-essential shit this month.</strong></p>
-      <p>That's ${luxuryPercent}% of your income on stuff you didn't need.</p>
+      <p>That's ${luxuryPercent}% of your expenses on stuff you didn't need.</p>
       <p>If you cut that in half, you'd save ${formatCurrency(luxuryTotal / 2)}/month = ${formatCurrency(halfSavings)}/year.</p>
     `;
   }
@@ -271,11 +274,11 @@ function displaySavingsRate(data) {
       <div class="savings-month">${month.month}</div>
       <div class="savings-stats">
         <div class="savings-stat">
-          <span class="savings-label">Income:</span>
+          <span class="savings-label">Money In:</span>
           <span class="amount text-success">${formatCurrency(month.income)}</span>
         </div>
         <div class="savings-stat">
-          <span class="savings-label">Expenses:</span>
+          <span class="savings-label">Money Out:</span>
           <span class="amount text-danger">${formatCurrency(month.expenses)}</span>
         </div>
         <div class="savings-stat">

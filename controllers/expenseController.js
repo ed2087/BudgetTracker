@@ -68,21 +68,7 @@ exports.createExpense = async (req, res) => {
       notes: notes ? sanitizeInput(notes) : null
     });
 
-    const Balance = require('../models/Balance');
-    const balance = await Balance.findOne({ userId: req.user._id });
-
-    if (balance) {
-      balance.currentBalance -= amount;
-      balance.lastUpdated = new Date();
-      balance.history.push({
-        date: new Date(),
-        balance: balance.currentBalance,
-        change: -amount,
-        reason: `Expense: ${name}`,
-        type: 'expense'
-      });
-      await balance.save();
-    }
+    // NO BALANCE UPDATE
 
     res.status(201).json({ success: true, expense });
   } catch (error) {
@@ -100,8 +86,6 @@ exports.updateExpense = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Expense not found' });
     }
 
-    const oldAmount = expense.amount;
-
     if (name) expense.name = sanitizeInput(name);
     if (category) expense.category = category;
     if (amount && validateAmount(amount)) {
@@ -112,24 +96,7 @@ exports.updateExpense = async (req, res) => {
 
     await expense.save();
 
-    if (amount && amount !== oldAmount) {
-      const Balance = require('../models/Balance');
-      const balance = await Balance.findOne({ userId: req.user._id });
-
-      if (balance) {
-        const difference = oldAmount - amount;
-        balance.currentBalance += difference;
-        balance.lastUpdated = new Date();
-        balance.history.push({
-          date: new Date(),
-          balance: balance.currentBalance,
-          change: difference,
-          reason: `Expense update: ${expense.name}`,
-          type: 'expense'
-        });
-        await balance.save();
-      }
-    }
+    // NO BALANCE UPDATE
 
     res.json({ success: true, expense });
   } catch (error) {
@@ -145,21 +112,7 @@ exports.deleteExpense = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Expense not found' });
     }
 
-    const Balance = require('../models/Balance');
-    const balance = await Balance.findOne({ userId: req.user._id });
-
-    if (balance) {
-      balance.currentBalance += expense.amount;
-      balance.lastUpdated = new Date();
-      balance.history.push({
-        date: new Date(),
-        balance: balance.currentBalance,
-        change: expense.amount,
-        reason: `Expense deleted: ${expense.name}`,
-        type: 'expense'
-      });
-      await balance.save();
-    }
+    // NO BALANCE UPDATE
 
     await expense.deleteOne();
 

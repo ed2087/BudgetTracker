@@ -27,7 +27,6 @@
             <button class="filter-btn" data-category="income">Income</button>
             <button class="filter-btn" data-category="expenses">Expenses</button>
             <button class="filter-btn" data-category="recurring">Recurring Bills</button>
-            <button class="filter-btn" data-category="balance">Balance</button>
             <button class="filter-btn" data-category="analytics">Analytics</button>
             <button class="filter-btn" data-category="account">Account & Security</button>
         </div>
@@ -50,10 +49,10 @@
                         <p>Getting started is easy:</p>
                         <ol>
                             <li>Create your account at the registration page</li>
-                            <li>Set your starting balance in Settings → Balance Management</li>
-                            <li>Add your income sources (Settings → Income)</li>
+                            <li>Add your income sources (Income page)</li>
                             <li>Set up recurring bills (Recurring Payments page)</li>
-                            <li>Start adding expenses as they happen</li>
+                            <li>Confirm income when you get paid</li>
+                            <li>Add expenses as they happen</li>
                             <li>Check Analytics to see where your money goes</li>
                         </ol>
                     </div>
@@ -71,11 +70,11 @@
 
                 <div class="faq-item">
                     <button class="faq-question">
-                        <span>What does "Current Balance" mean?</span>
+                        <span>How does tracking work without a balance?</span>
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Current Balance is like your real bank account balance. It tracks the actual money you have right now. It goes UP when you confirm income received, and goes DOWN when you add expenses. This is different from "Income This Month" which is just an estimate based on your income source settings.</p>
+                        <p>Budget Tracker shows you "Money In (Confirmed)" vs "Money Out (Spent)" this month. This tells you if you're living within your means. The dashboard shows "Left This Month" (income minus expenses) and "After Upcoming Bills" to help you plan ahead.</p>
                     </div>
                 </div>
             </div>
@@ -106,7 +105,7 @@
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>On your payday, the app will create a pending confirmation asking "Did you get paid $X from [source]?". When you click "YES - Received", the money is added to your Current Balance. This keeps your balance accurate and prevents you from counting money you haven't actually received yet.</p>
+                        <p>On your payday, the app will show a confirmation in the global modal (top right bell icon) asking "Did you get paid $X from [source]?". When you click "YES - Received", it's recorded as confirmed income for the month. This counts toward your "Money In" total.</p>
                     </div>
                 </div>
 
@@ -116,7 +115,7 @@
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Click "Different Amount" when confirming income. Enter the actual amount you received, and that's what will be added to your balance instead of the expected amount.</p>
+                        <p>Click "Different Amount" when confirming income. Enter the actual amount you received, and that's what will be recorded as your confirmed income.</p>
                     </div>
                 </div>
 
@@ -126,7 +125,7 @@
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Set the frequency to "Irregular" when adding the income source. This won't create automatic prompts. Instead, manually add the income when you actually receive it by confirming it from the dashboard or adding it directly.</p>
+                        <p>Set the frequency to "Irregular" when adding the income source. This won't create automatic prompts. Instead, manually confirm the income when you actually receive it.</p>
                     </div>
                 </div>
             </div>
@@ -141,7 +140,7 @@
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>You can add expenses from the Dashboard (+ Add Expense button) or the Expenses page. Fill in the name, category, amount, date paid, and optional notes. The expense will immediately reduce your Current Balance.</p>
+                        <p>You can add expenses from the Dashboard (+ Add Expense button) or the Expenses page. Fill in the name, category, amount, date paid, and optional notes. The expense is recorded immediately.</p>
                     </div>
                 </div>
 
@@ -187,7 +186,7 @@
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Set up templates for bills that repeat monthly (rent, utilities, subscriptions). On the due day each month, you'll get a confirmation prompt: "Is the Rent ($1,200) paid this month?" When you confirm, it creates an actual expense and updates your balance. This keeps you accountable for regular bills.</p>
+                        <p>Set up templates for bills that repeat monthly (rent, utilities, subscriptions). On the due day each month, you'll get a confirmation in the global modal: "Is the Rent ($1,200) paid this month?" When you confirm, it creates an actual expense record. This keeps you accountable for regular bills.</p>
                     </div>
                 </div>
 
@@ -222,60 +221,6 @@
                 </div>
             </div>
 
-            <!-- Balance -->
-            <div class="faq-category" data-category="balance">
-                <h2 class="category-title">Balance Management</h2>
-
-                <div class="faq-item">
-                    <button class="faq-question">
-                        <span>How do I set my starting balance?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Go to Settings → Balance Management → "Update Balance Manually". Enter your current bank account balance and a reason like "Starting balance". This sets your baseline for tracking.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <button class="faq-question">
-                        <span>Why is my balance different from my bank account?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>This can happen if:</p>
-                        <ul>
-                            <li>You forgot to add an expense to the app</li>
-                            <li>You didn't confirm income you actually received</li>
-                            <li>There are pending transactions in your bank</li>
-                            <li>Bank fees or interest not tracked in the app</li>
-                        </ul>
-                        <p>Update your balance manually to match your actual bank balance, then stay consistent with logging all transactions.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <button class="faq-question">
-                        <span>Can I view my balance history?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Yes! Go to Settings → Balance Management → "View Balance History". You'll see every change to your balance with date, reason, amount changed, and resulting balance.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <button class="faq-question">
-                        <span>What's the difference between "Current Balance" and "Income This Month"?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p><strong>Current Balance:</strong> Actual money you have right now (like your bank balance)</p>
-                        <p><strong>Income This Month:</strong> Expected income based on your income source settings (NOT actual money received)</p>
-                        <p>Only confirmed income adds to your balance. Expected income is just a projection.</p>
-                    </div>
-                </div>
-            </div>
-
             <!-- Analytics -->
             <div class="faq-category" data-category="analytics">
                 <h2 class="category-title">Analytics & Reports</h2>
@@ -288,10 +233,10 @@
                     <div class="faq-answer">
                         <p>The Reality Check shows your spending status with brutal honesty:</p>
                         <ul>
-                            <li><strong>Green (Healthy):</strong> Spending ≤90% of income</li>
-                            <li><strong>Yellow (Warning):</strong> Spending 91-99% of income</li>
-                            <li><strong>Orange (Danger):</strong> Spending 100-110% of income</li>
-                            <li><strong>Red (Critical):</strong> Spending >110% of income</li>
+                            <li><strong>Green (Healthy):</strong> Spending ≤50% of confirmed income</li>
+                            <li><strong>Yellow (Warning):</strong> Spending 51-75% of confirmed income</li>
+                            <li><strong>Orange (Danger):</strong> Spending 76-100% of confirmed income</li>
+                            <li><strong>Red (Critical):</strong> Spending >100% of confirmed income</li>
                         </ul>
                     </div>
                 </div>
@@ -334,6 +279,18 @@
                             <li><strong>🔥 Spike:</strong> Spending is >150% of 3-month average</li>
                             <li><strong>→ Stable:</strong> Spending is consistent</li>
                         </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What's "Left This Month" and "After Upcoming Bills"?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p><strong>Left This Month:</strong> Money In (confirmed income) minus Money Out (expenses paid)</p>
+                        <p><strong>After Upcoming Bills:</strong> Left This Month minus your pending bill confirmations</p>
+                        <p>This helps you see how much money you'll actually have left after paying everything.</p>
                     </div>
                 </div>
             </div>
@@ -383,7 +340,7 @@
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>Go to Settings → Data Management → "Export All Data (JSON)". This downloads a complete backup of all your expenses, income, recurring templates, and balance history.</p>
+                        <p>Go to Settings → Data Management → "Export All Data (JSON)". This downloads a complete backup of all your expenses, income, recurring templates, and confirmation history.</p>
                     </div>
                 </div>
 

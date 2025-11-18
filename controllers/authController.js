@@ -1,5 +1,4 @@
 const User = require('../models/User');
-const Balance = require('../models/Balance');
 const tokenService = require('../services/tokenService');
 const jwtConfig = require('../config/jwt');
 
@@ -81,12 +80,7 @@ exports.register = async (req, res) => {
 
     await user.save();
 
-    await Balance.create({
-      userId: user._id,
-      currentBalance: 0,
-      lastUpdated: new Date(),
-      history: []
-    });
+    // NO BALANCE CREATION
 
     res.status(201).json({
       success: true,

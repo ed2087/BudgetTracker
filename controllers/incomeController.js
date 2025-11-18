@@ -1,6 +1,6 @@
 const Income = require('../models/Income');
 const PendingConfirmation = require('../models/PendingConfirmation');
-const Balance = require('../models/Balance');
+// REMOVED: const Balance = require('../models/Balance');
 const { calculateTotalMonthlyIncome } = require('../services/calculations');
 const { calculateNextPayday, validateAmount, validateDate } = require('../utils/helpers');
 

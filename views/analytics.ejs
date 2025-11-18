@@ -12,30 +12,30 @@
         <h1>Analytics</h1>
 
         <!-- REALITY CHECK -->
-        <section class="reality-section">
-            <div class="card reality-card" id="realityCard">
-                <h2>REALITY CHECK</h2>
-                <div class="reality-stats">
-                    <div class="reality-stat">
-                        <div class="reality-label">Money You Have Right Now</div>
-                        <div class="reality-value amount" id="currentBalance">$0.00</div>
-                    </div>
-                    <div class="reality-stat">
-                        <div class="reality-label">Money Coming This Month</div>
-                        <div class="reality-value amount text-success" id="monthlyIncome">$0.00</div>
-                    </div>
-                    <div class="reality-stat">
-                        <div class="reality-label">Money Going Out This Month</div>
-                        <div class="reality-value amount text-danger" id="monthlyExpenses">$0.00</div>
-                    </div>
-                    <div class="reality-stat">
-                        <div class="reality-label">Difference</div>
-                        <div class="reality-value amount" id="difference">$0.00</div>
-                    </div>
-                </div>
-                <div class="reality-message" id="statusMessage"></div>
+<section class="reality-section">
+    <div class="card reality-card" id="realityCard">
+        <h2>REALITY CHECK</h2>
+        <div class="reality-stats">
+            <div class="reality-stat">
+                <div class="reality-label">Money In (Confirmed)</div>
+                <div class="reality-value amount text-success" id="confirmedIncome">$0.00</div>
             </div>
-        </section>
+            <div class="reality-stat">
+                <div class="reality-label">Money Out (Spent)</div>
+                <div class="reality-value amount text-danger" id="totalExpenses">$0.00</div>
+            </div>
+            <div class="reality-stat">
+                <div class="reality-label">Left This Month</div>
+                <div class="reality-value amount" id="leftThisMonth">$0.00</div>
+            </div>
+            <div class="reality-stat">
+                <div class="reality-label">After Upcoming Bills</div>
+                <div class="reality-value amount" id="afterBills">$0.00</div>
+            </div>
+        </div>
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+</section>
 
         <!-- CHARTS SIDE BY SIDE -->
         <div class="charts-grid">
@@ -101,10 +101,14 @@
         </section>
     </main>
 
+    <%- include('partials/confirmationModal') %>
     <%- include('partials/footer') %>
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="/js/global.js"></script>
+    <script src="/js/confirmations.js"></script>
     <script src="/js/partials.js"></script>
     <script src="/js/charts.js"></script>
     <script src="/js/analytics.js"></script>

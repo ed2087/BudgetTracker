@@ -11,167 +11,125 @@
     <main class="container">
         <h1>Settings</h1>
 
-        <section class="household-section">
+        <!-- Account Information -->
+        <section class="account-section">
             <div class="card">
-                <h2>Household Information</h2>
+                <h3>Account Information</h3>
                 <form id="householdForm">
                     <div class="form-group">
                         <label for="householdName">Household Name</label>
                         <input type="text" id="householdName" required>
                     </div>
-
                     <div class="form-group">
-                        <label for="username">Username</label>
+                        <label for="username">Username (cannot be changed)</label>
                         <input type="text" id="username" disabled>
-                        <small class="form-note">Username cannot be changed</small>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Update Household Info</button>
+                    <button type="submit" class="btn btn-primary">Update Information</button>
                 </form>
             </div>
         </section>
 
+        <!-- Password -->
         <section class="password-section">
             <div class="card">
-                <h2>Change Password</h2>
+                <h3>Change Password</h3>
                 <form id="passwordForm">
                     <div class="form-group">
                         <label for="currentPassword">Current Password</label>
-                        <input type="password" id="currentPassword" required autocomplete="current-password">
+                        <input type="password" id="currentPassword" required>
                     </div>
-
                     <div class="form-group">
                         <label for="newPassword">New Password</label>
-                        <input type="password" id="newPassword" required autocomplete="new-password" minlength="6">
+                        <input type="password" id="newPassword" minlength="6" required>
                     </div>
-
                     <div class="form-group">
                         <label for="confirmPassword">Confirm New Password</label>
-                        <input type="password" id="confirmPassword" required autocomplete="new-password" minlength="6">
+                        <input type="password" id="confirmPassword" minlength="6" required>
                     </div>
-
                     <button type="submit" class="btn btn-primary">Change Password</button>
                 </form>
             </div>
         </section>
 
-        <section class="balance-section">
-            <div class="card">
-                <h2>Balance Management</h2>
-                <div class="balance-info">
-                    <div class="balance-item">
-                        <span class="balance-label">Current Balance:</span>
-                        <span class="balance-value amount" id="currentBalance">$0.00</span>
-                    </div>
-                    <div class="balance-item">
-                        <span class="balance-label">Last Updated:</span>
-                        <span class="balance-value" id="lastUpdated">-</span>
-                    </div>
-                </div>
-                <button class="btn btn-primary" id="updateBalanceBtn">Update Balance Manually</button>
-                <button class="btn btn-primary" id="viewHistoryBtn">View Balance History</button>
-            </div>
-        </section>
-
+        <!-- Preferences -->
         <section class="preferences-section">
             <div class="card">
-                <h2>Notification Preferences</h2>
+                <h3>Preferences</h3>
                 <form id="preferencesForm">
                     <div class="form-group">
-                        <label for="reminderFrequency">Pending Confirmation Reminder Frequency</label>
+                        <label for="reminderFrequency">Reminder Frequency</label>
                         <select id="reminderFrequency">
                             <option value="daily">Daily</option>
                             <option value="every3days">Every 3 Days</option>
                             <option value="weekly">Weekly</option>
                         </select>
                     </div>
-
                     <div class="form-group">
-                        <label for="lowBalanceThreshold">Low Balance Warning Threshold</label>
+                        <label for="lowBalanceThreshold">Low Balance Alert Threshold</label>
                         <input type="number" id="lowBalanceThreshold" step="0.01" min="0">
-                        <small class="form-note">Get notified when balance drops below this amount</small>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Update Preferences</button>
+                    <button type="submit" class="btn btn-primary">Save Preferences</button>
                 </form>
             </div>
         </section>
 
+        <!-- Data Management -->
         <section class="data-section">
             <div class="card">
-                <h2>Data Management</h2>
+                <h3>Data Management</h3>
                 <div class="data-actions">
-                    <button class="btn btn-primary" id="exportDataBtn">Export All Data (JSON)</button>
-                    <button class="btn btn-danger" id="deleteAllBtn">Delete All Data</button>
+                    <button class="btn btn-primary" id="exportDataBtn">
+                        📥 Export All Data
+                    </button>
+                    <button class="btn btn-danger" id="deleteAllBtn">
+                        🗑️ Delete All Data
+                    </button>
                 </div>
+                <p class="warning-text">
+                    ⚠️ Deleting all data will remove all expenses, income, and recurring bills. This cannot be undone.
+                </p>
             </div>
         </section>
 
-        <section class="danger-section">
-            <div class="card danger-card">
-                <h2>Danger Zone</h2>
-                <div class="danger-actions">
-                    <button class="btn btn-danger" id="logoutBtn">Logout</button>
-                </div>
+        <!-- Logout -->
+        <section class="logout-section">
+            <div class="card">
+                <button class="btn btn-danger btn-block" id="logoutBtn">Logout</button>
             </div>
         </section>
     </main>
 
-    <div id="updateBalanceModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Update Balance Manually</h3>
-                <button class="modal-close" id="closeBalanceModal">&times;</button>
-            </div>
-            <form id="updateBalanceForm">
-                <div class="form-group">
-                    <label for="newBalance">New Balance</label>
-                    <input type="number" id="newBalance" step="0.01" required>
-                    <small class="form-note">Can be negative for overdraft</small>
-                </div>
-                <div class="form-group">
-                    <label for="balanceReason">Reason (optional)</label>
-                    <input type="text" id="balanceReason" placeholder="Manual adjustment">
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Update Balance</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="balanceHistoryModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Balance History</h3>
-                <button class="modal-close" id="closeHistoryModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="balanceHistory" class="history-list"></div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Delete Confirmation Modal -->
     <div id="deleteConfirmModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>⚠️ Delete All Data</h3>
+                <h3>⚠️ Confirm Data Deletion</h3>
                 <button class="modal-close" id="closeDeleteModal">&times;</button>
             </div>
             <div class="modal-body">
-                <p class="warning-text">This will permanently delete all your expenses, income, and recurring payments. Your account will remain active but all data will be gone.</p>
-                <p class="warning-text"><strong>This cannot be undone.</strong></p>
+                <p><strong>This will delete ALL of your data:</strong></p>
+                <ul>
+                    <li>All expenses</li>
+                    <li>All income sources</li>
+                    <li>All recurring bills</li>
+                    <li>All pending confirmations</li>
+                </ul>
+                <p class="warning-text">⚠️ This action cannot be undone!</p>
                 <form id="deleteConfirmForm">
                     <div class="form-group">
-                        <label for="confirmPassword">Enter your password to confirm</label>
+                        <label for="deleteConfirmPassword">Enter your password to confirm:</label>
                         <input type="password" id="deleteConfirmPassword" required>
                     </div>
-                    <button type="submit" class="btn btn-danger btn-block">Yes, Delete Everything</button>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('deleteConfirmModal').classList.add('hidden')">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete Everything</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 
     <%- include('partials/footer') %>
-
     <script src="/js/global.js"></script>
     <script src="/js/partials.js"></script>
     <script src="/js/settings.js"></script>
