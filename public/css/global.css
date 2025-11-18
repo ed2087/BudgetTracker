@@ -90,6 +90,12 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+.btn-sm {
+  padding: 8px 16px;
+  min-height: 36px;
+  font-size: 14px;
+}
+
 .btn-primary {
   background-color: var(--primary);
   color: white;
@@ -104,14 +110,26 @@ body {
   color: white;
 }
 
+.btn-success:hover {
+  background-color: #218838;
+}
+
 .btn-danger {
   background-color: var(--danger);
   color: white;
 }
 
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
 .btn-warning {
   background-color: var(--warning);
-  color: white;
+  color: #000;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
 }
 
 .btn-block {
@@ -219,6 +237,11 @@ h4 { font-size: 18px; }
 
 .badge-warning {
   background-color: var(--warning);
+  color: #000;
+}
+
+.badge-primary {
+  background-color: var(--primary);
   color: white;
 }
 
@@ -248,6 +271,130 @@ h4 { font-size: 18px; }
   margin-bottom: 16px;
 }
 
+.empty-state {
+  text-align: center;
+  padding: 30px;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* ===== CONFIRMATION STYLES ===== */
+
+.confirmation-item {
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.confirmation-item:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.confirmation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.confirmation-text {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--text-dark);
+}
+
+.confirmation-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.confirmation-actions .btn {
+  flex: 1;
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+/* Overdue confirmations */
+.confirmation-overdue {
+  border-left: 5px solid var(--danger);
+  background-color: #fff5f5;
+}
+
+/* Snoozed confirmations */
+.confirmation-snoozed {
+  border-left: 5px solid var(--warning);
+  background-color: #fffef5;
+  opacity: 0.85;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.overdue-badge {
+  background-color: var(--danger);
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.snoozed-badge {
+  background-color: var(--warning);
+  color: #000;
+}
+
+.today-badge {
+  background-color: var(--success);
+  color: white;
+}
+
+.confirmation-date {
+  color: #6c757d;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* ===== RESPONSIVE STYLES ===== */
+
+@media (max-width: 767px) {
+  .confirmation-actions {
+    flex-direction: column;
+  }
+  
+  .confirmation-actions .btn {
+    min-width: 100%;
+  }
+  
+  .confirmation-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
 @media (min-width: 768px) {
   .container {
     padding: 30px;
@@ -268,3 +415,138 @@ h4 { font-size: 18px; }
     padding: 40px;
   }
 }
+
+/* ===== DASHBOARD SPECIFIC STYLES ===== */
+
+.pending-section {
+  margin-bottom: 30px;
+}
+
+.pending-count {
+  display: inline-block;
+  background-color: var(--danger);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+.income-confirmations,
+.expense-confirmations {
+  margin-top: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-dark);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 8px;
+}
+
+/* ===== MODAL STYLES ===== */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background-color: #f0f0f0;
+  color: var(--text-dark);
+}
+
+/* ===== STATUS CARD STYLES ===== */
+
+.status-card {
+  border-left: 5px solid;
+}
+
+.status-card.status-healthy {
+  border-left-color: var(--success);
+  background: linear-gradient(to right, #d4edda 0%, white 100%);
+}
+
+.status-card.status-warning {
+  border-left-color: var(--warning);
+  background: linear-gradient(to right, #fff3cd 0%, white 100%);
+}
+
+.status-card.status-danger {
+  border-left-color: var(--danger);
+  background: linear-gradient(to right, #f8d7da 0%, white 100%);
+}
+
+.status-card.status-critical {
+  border-left-color: #721c24;
+  background: linear-gradient(to right, #f5c6cb 0%, white 100%);
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+.mb-4 { margin-bottom: 32px; }
+
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mt-4 { margin-top: 32px; }
+
+.p-1 { padding: 8px; }
+.p-2 { padding: 16px; }
+.p-3 { padding: 24px; }
+.p-4 { padding: 32px; }

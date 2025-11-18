@@ -1,0 +1,41 @@
+<!-- Confirmation Modal -->
+<div id="confirmationModal" class="modal hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2>
+        ⚠️ Pending Confirmations 
+        <span id="modalPendingCount" class="pending-count">0</span>
+      </h2>
+      <button id="closeConfirmationModal" class="modal-close" aria-label="Close">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <!-- Income Confirmations -->
+      <div id="modalIncomeSection" class="confirmation-section">
+        <h3 class="section-title">💰 Income Confirmations</h3>
+        <div id="modalIncomeConfirmations">
+          <p class="empty-state">Loading...</p>
+        </div>
+      </div>
+      
+      <!-- Expense Confirmations -->
+      <div id="modalExpenseSection" class="confirmation-section">
+        <h3 class="section-title">💳 Bill Confirmations</h3>
+        <div id="modalExpenseConfirmations">
+          <p class="empty-state">Loading...</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-warning" id="remindMeLaterBtn">⏰ Remind Me Later</button>
+      <button class="btn btn-success" id="closeModalBtn">✓ All Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Notification Badge -->
+<div id="confirmationBadge" class="notification-badge hidden" title="Click to view pending confirmations">
+  <span id="badgeCount">0</span>
+</div>

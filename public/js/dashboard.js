@@ -39,7 +39,7 @@ function displayStats(data) {
 }
 
 function displayPendingConfirmations(data) {
-  const totalPending = data.incomeConfirmations.length + data.expenseConfirmations.length;
+  const totalPending = (data.pending?.length || 0) + (data.snoozed?.length || 0);
   
   if (totalPending === 0) {
     document.getElementById('pendingSection').classList.add('hidden');
@@ -55,42 +55,105 @@ function displayPendingConfirmations(data) {
   incomeContainer.innerHTML = '';
   expenseContainer.innerHTML = '';
 
-  data.incomeConfirmations.forEach(confirmation => {
-    incomeContainer.innerHTML += createIncomeConfirmationHTML(confirmation);
-  });
+  // Combine pending and snoozed confirmations
+  const allConfirmations = [...(data.pending || []), ...(data.snoozed || [])];
 
-  data.expenseConfirmations.forEach(confirmation => {
-    expenseContainer.innerHTML += createExpenseConfirmationHTML(confirmation);
-  });
+  // Separate by type
+  const incomeConfirmations = allConfirmations.filter(c => c.type === 'income');
+  const expenseConfirmations = allConfirmations.filter(c => c.type === 'expense');
+
+  // Display income confirmations
+  if (incomeConfirmations.length > 0) {
+    incomeConfirmations.forEach(confirmation => {
+      incomeContainer.innerHTML += createIncomeConfirmationHTML(confirmation);
+    });
+  } else {
+    incomeContainer.innerHTML = '<p class="empty-state">No pending income confirmations</p>';
+  }
+
+  // Display expense confirmations
+  if (expenseConfirmations.length > 0) {
+    expenseConfirmations.forEach(confirmation => {
+      expenseContainer.innerHTML += createExpenseConfirmationHTML(confirmation);
+    });
+  } else {
+    expenseContainer.innerHTML = '<p class="empty-state">No pending expense confirmations</p>';
+  }
 
   attachConfirmationListeners();
 }
 
 function createIncomeConfirmationHTML(confirmation) {
+  const now = new Date();
+  const dueDate = new Date(confirmation.dueDate);
+  const daysOverdue = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));
+  const isOverdue = daysOverdue > 0;
+  const isSnoozed = confirmation.status === 'snoozed';
+  
+  const overdueClass = isOverdue ? 'confirmation-overdue' : '';
+  const snoozedClass = isSnoozed ? 'confirmation-snoozed' : '';
+  
+  let statusBadge = '';
+  if (isSnoozed) {
+    const snoozeDate = new Date(confirmation.snoozeUntil);
+    statusBadge = `<span class="status-badge snoozed-badge">⏰ Snoozed until ${formatDate(snoozeDate)}</span>`;
+  } else if (isOverdue) {
+    statusBadge = `<span class="status-badge overdue-badge">⚠️ ${daysOverdue} day${daysOverdue > 1 ? 's' : ''} overdue</span>`;
+  } else {
+    statusBadge = `<span class="status-badge today-badge">📅 Today</span>`;
+  }
+  
   return `
-    <div class="confirmation-item">
+    <div class="confirmation-item ${overdueClass} ${snoozedClass}">
+      <div class="confirmation-header">
+        ${statusBadge}
+        <span class="confirmation-date">Due: ${formatDate(dueDate)}</span>
+      </div>
       <div class="confirmation-text">
         Did you get paid ${formatCurrency(confirmation.expectedAmount)} from ${confirmation.name}?
       </div>
       <div class="confirmation-actions">
-        <button class="btn btn-success btn-sm" onclick="confirmIncome('${confirmation._id}', ${confirmation.expectedAmount})">YES - Received</button>
-        <button class="btn btn-warning btn-sm" onclick="snoozeConfirmation('${confirmation._id}')">NOT YET</button>
-        <button class="btn btn-primary btn-sm" onclick="showDifferentAmount('${confirmation._id}', 'income')">Different Amount</button>
+        <button class="btn btn-success btn-sm" onclick="confirmIncome('${confirmation._id}', ${confirmation.expectedAmount})">✓ YES - Received</button>
+        <button class="btn btn-warning btn-sm" onclick="snoozeConfirmation('${confirmation._id}')">⏰ NOT YET</button>
+        <button class="btn btn-primary btn-sm" onclick="showDifferentAmount('${confirmation._id}', 'income')">💰 Different Amount</button>
       </div>
     </div>
   `;
 }
 
 function createExpenseConfirmationHTML(confirmation) {
+  const now = new Date();
+  const dueDate = new Date(confirmation.dueDate);
+  const daysOverdue = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));
+  const isOverdue = daysOverdue > 0;
+  const isSnoozed = confirmation.status === 'snoozed';
+  
+  const overdueClass = isOverdue ? 'confirmation-overdue' : '';
+  const snoozedClass = isSnoozed ? 'confirmation-snoozed' : '';
+  
+  let statusBadge = '';
+  if (isSnoozed) {
+    const snoozeDate = new Date(confirmation.snoozeUntil);
+    statusBadge = `<span class="status-badge snoozed-badge">⏰ Snoozed until ${formatDate(snoozeDate)}</span>`;
+  } else if (isOverdue) {
+    statusBadge = `<span class="status-badge overdue-badge">⚠️ ${daysOverdue} day${daysOverdue > 1 ? 's' : ''} overdue</span>`;
+  } else {
+    statusBadge = `<span class="status-badge today-badge">📅 Today</span>`;
+  }
+  
   return `
-    <div class="confirmation-item">
+    <div class="confirmation-item ${overdueClass} ${snoozedClass}">
+      <div class="confirmation-header">
+        ${statusBadge}
+        <span class="confirmation-date">Due: ${formatDate(dueDate)}</span>
+      </div>
       <div class="confirmation-text">
         Is the ${confirmation.name} (${formatCurrency(confirmation.expectedAmount)}) paid this month?
       </div>
       <div class="confirmation-actions">
-        <button class="btn btn-success btn-sm" onclick="showExpenseDate('${confirmation._id}')">YES - Mark Paid</button>
-        <button class="btn btn-warning btn-sm" onclick="snoozeConfirmation('${confirmation._id}')">NOT YET</button>
-        <button class="btn btn-danger btn-sm" onclick="skipConfirmation('${confirmation._id}')">SKIP THIS MONTH</button>
+        <button class="btn btn-success btn-sm" onclick="showExpenseDate('${confirmation._id}')">✓ YES - Mark Paid</button>
+        <button class="btn btn-warning btn-sm" onclick="snoozeConfirmation('${confirmation._id}')">⏰ NOT YET</button>
+        <button class="btn btn-danger btn-sm" onclick="skipConfirmation('${confirmation._id}')">✗ SKIP THIS MONTH</button>
       </div>
     </div>
   `;
@@ -153,7 +216,7 @@ function setupModals() {
 
   // Helper function to close a modal
   function closeModal(modal) {
-    modal.classList.add('hidden');
+    if (modal) modal.classList.add('hidden');
   }
 
   // Open expense modal
@@ -161,7 +224,7 @@ function setupModals() {
     addExpenseBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      closeModal(balanceModal); // Close other modal if open
+      closeModal(balanceModal);
       expenseModal.classList.remove('hidden');
       document.getElementById('expenseDate').valueAsDate = new Date();
     });
@@ -172,7 +235,7 @@ function setupModals() {
     updateBalanceBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      closeModal(expenseModal); // Close other modal if open
+      closeModal(expenseModal);
       balanceModal.classList.remove('hidden');
     });
   }
@@ -198,7 +261,6 @@ function setupModals() {
   // Close expense modal when clicking outside (on backdrop)
   if (expenseModal) {
     expenseModal.addEventListener('click', (e) => {
-      // Only close if clicking directly on the modal backdrop, not its children
       if (e.target === expenseModal) {
         closeModal(expenseModal);
       }
@@ -208,7 +270,6 @@ function setupModals() {
   // Close balance modal when clicking outside (on backdrop)
   if (balanceModal) {
     balanceModal.addEventListener('click', (e) => {
-      // Only close if clicking directly on the modal backdrop, not its children
       if (e.target === balanceModal) {
         closeModal(balanceModal);
       }

@@ -44,20 +44,36 @@ exports.confirmConfirmation = async (req, res) => {
     const date = actualDate ? new Date(actualDate) : confirmation.dueDate;
 
     if (confirmation.type === 'income') {
-      const balance = await Balance.findOne({ userId: req.user._id });
-
-      if (balance) {
-        balance.currentBalance += amount;
-        balance.lastUpdated = new Date();
-        balance.history.push({
-          date: new Date(),
-          balance: balance.currentBalance,
-          change: amount,
-          reason: `Income: ${confirmation.name}`,
-          type: 'income'
-        });
-        await balance.save();
+      // Update income nextPayday FIRST
+      const income = await Income.findById(confirmation.referenceId);
+      if (income) {
+        const { calculateNextPayday } = require('../utils/helpers');
+        income.nextPayday = calculateNextPayday(income.frequency, income.nextPayday);
+        await income.save();
       }
+
+      // Then update balance
+      let balance = await Balance.findOne({ userId: req.user._id });
+      if (!balance) {
+        balance = await Balance.create({
+          userId: req.user._id,
+          currentBalance: 0,
+          lastUpdated: new Date(),
+          history: []
+        });
+      }
+
+      balance.currentBalance += amount;
+      balance.lastUpdated = new Date();
+      balance.history.push({
+        date: new Date(),
+        balance: balance.currentBalance,
+        change: amount,
+        reason: `Income: ${confirmation.name}`,
+        type: 'income'
+      });
+      await balance.save();
+
     } else if (confirmation.type === 'expense') {
       const template = await RecurringTemplate.findById(confirmation.referenceId);
 
@@ -65,7 +81,7 @@ exports.confirmConfirmation = async (req, res) => {
         userId: req.user._id,
         templateId: confirmation.referenceId,
         name: confirmation.name,
-        category: template.category,
+        category: template ? template.category : 'Other',
         amount,
         dueDate: confirmation.dueDate,
         paidDate: date,
@@ -73,20 +89,26 @@ exports.confirmConfirmation = async (req, res) => {
         type: 'recurring'
       });
 
-      const balance = await Balance.findOne({ userId: req.user._id });
-
-      if (balance) {
-        balance.currentBalance -= amount;
-        balance.lastUpdated = new Date();
-        balance.history.push({
-          date: new Date(),
-          balance: balance.currentBalance,
-          change: -amount,
-          reason: `Expense: ${confirmation.name}`,
-          type: 'expense'
+      let balance = await Balance.findOne({ userId: req.user._id });
+      if (!balance) {
+        balance = await Balance.create({
+          userId: req.user._id,
+          currentBalance: 0,
+          lastUpdated: new Date(),
+          history: []
         });
-        await balance.save();
       }
+
+      balance.currentBalance -= amount;
+      balance.lastUpdated = new Date();
+      balance.history.push({
+        date: new Date(),
+        balance: balance.currentBalance,
+        change: -amount,
+        reason: `Expense: ${confirmation.name}`,
+        type: 'expense'
+      });
+      await balance.save();
     }
 
     confirmation.status = 'confirmed';
@@ -94,6 +116,7 @@ exports.confirmConfirmation = async (req, res) => {
 
     res.json({ success: true });
   } catch (error) {
+    console.error('Confirmation error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };

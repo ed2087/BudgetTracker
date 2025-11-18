@@ -7,6 +7,10 @@ async function confirmIncome(confirmationId, expectedAmount) {
 
     showSuccess('Income confirmed successfully');
     
+    // Reload confirmations modal
+    await window.reloadConfirmations();
+    
+    // Reload dashboard if on dashboard page
     if (typeof loadDashboardData === 'function') {
       loadDashboardData();
     }
@@ -31,6 +35,10 @@ async function snoozeConfirmation(confirmationId) {
 
     showSuccess(`Snoozed for ${days} day${days > 1 ? 's' : ''}`);
     
+    // Reload confirmations modal
+    await window.reloadConfirmations();
+    
+    // Reload dashboard if on dashboard page
     if (typeof loadDashboardData === 'function') {
       loadDashboardData();
     }
@@ -51,6 +59,10 @@ async function skipConfirmation(confirmationId) {
 
     showSuccess('Confirmation skipped');
     
+    // Reload confirmations modal
+    await window.reloadConfirmations();
+    
+    // Reload dashboard if on dashboard page
     if (typeof loadDashboardData === 'function') {
       loadDashboardData();
     }
@@ -87,6 +99,10 @@ async function confirmIncomeWithAmount(confirmationId, actualAmount) {
 
     showSuccess('Income confirmed with actual amount');
     
+    // Reload confirmations modal
+    await window.reloadConfirmations();
+    
+    // Reload dashboard if on dashboard page
     if (typeof loadDashboardData === 'function') {
       loadDashboardData();
     }
@@ -104,6 +120,10 @@ async function updateConfirmationAmount(confirmationId, actualAmount) {
 
     showSuccess('Amount updated');
     
+    // Reload confirmations modal
+    await window.reloadConfirmations();
+    
+    // Reload dashboard if on dashboard page
     if (typeof loadDashboardData === 'function') {
       loadDashboardData();
     }
@@ -136,6 +156,10 @@ async function confirmExpense(confirmationId, actualDate) {
 
     showSuccess('Expense confirmed successfully');
     
+    // Reload confirmations modal
+    await window.reloadConfirmations();
+    
+    // Reload dashboard if on dashboard page
     if (typeof loadDashboardData === 'function') {
       loadDashboardData();
     }
