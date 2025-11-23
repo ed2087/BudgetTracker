@@ -1,1 +1,12 @@
 <div id="notificationContainer" class="notification-container"></div>
+<script>
+// Make confirmation notifications clickable - opens the modal
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.notification-confirmation')) {
+    // Open the confirmations modal
+    if (typeof window.openConfirmationsModal === 'function') {
+      window.openConfirmationsModal();
+    }
+  }
+});
+</script>

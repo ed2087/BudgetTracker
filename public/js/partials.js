@@ -27,14 +27,27 @@ document.addEventListener('DOMContentLoaded', () => {
       link.classList.add('active');
     }
   });
+
+  // Load confirmations and auto-open modal on dashboard
+  if (window.location.pathname === '/dashboard') {
+    loadNotifications(true); // Auto-open on dashboard
+  } else {
+    loadNotifications(false); // Just show banner on other pages
+  }
 });
 
-const showNotification = (message, type = 'info', duration = 5000) => {
+const showNotification = (message, type = 'info', duration = 5000, clickable = false) => {
   const container = document.getElementById('notificationContainer');
   if (!container) return;
 
   const notification = document.createElement('div');
   notification.className = `notification notification-${type}`;
+  
+  // Make confirmation notifications clickable
+  if (clickable) {
+    notification.style.cursor = 'pointer';
+    notification.title = 'Click to view confirmations';
+  }
   
   notification.innerHTML = `
     <div class="notification-message">${message}</div>
@@ -44,9 +57,19 @@ const showNotification = (message, type = 'info', duration = 5000) => {
   container.appendChild(notification);
 
   const closeBtn = notification.querySelector('.notification-close');
-  closeBtn.addEventListener('click', () => {
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent opening modal when closing
     notification.remove();
   });
+
+  // Make entire notification clickable for confirmations
+  if (clickable) {
+    notification.addEventListener('click', () => {
+      if (typeof window.openConfirmationsModal === 'function') {
+        window.openConfirmationsModal();
+      }
+    });
+  }
 
   if (duration > 0) {
     setTimeout(() => {
@@ -55,13 +78,28 @@ const showNotification = (message, type = 'info', duration = 5000) => {
   }
 };
 
-const loadNotifications = async () => {
+const loadNotifications = async (autoOpen = false) => {
   try {
-    const response = await fetchAPI('/dashboard/pending');
+    const response = await fetchAPI('/confirmations');
     if (response.success) {
-      const totalPending = response.incomeConfirmations.length + response.expenseConfirmations.length;
+      const totalPending = (response.pending?.length || 0) + (response.snoozed?.length || 0);
+      
       if (totalPending > 0) {
-        showNotification(`You have ${totalPending} pending confirmation${totalPending > 1 ? 's' : ''}`, 'confirmation', 0);
+        // Show clickable notification banner
+        showNotification(
+          `You have ${totalPending} pending confirmation${totalPending > 1 ? 's' : ''}`, 
+          'confirmation', 
+          0, // Don't auto-dismiss
+          true // Make clickable
+        );
+        
+        // Auto-open modal on dashboard if there are pending confirmations
+        if (autoOpen && typeof window.openConfirmationsModal === 'function') {
+          // Small delay to let the page finish loading
+          setTimeout(() => {
+            window.openConfirmationsModal();
+          }, 500);
+        }
       }
     }
   } catch (error) {
@@ -69,6 +107,5 @@ const loadNotifications = async () => {
   }
 };
 
-if (window.location.pathname !== '/login') {
-  loadNotifications();
-}
+// Make loadNotifications available globally for reload
+window.reloadNotifications = loadNotifications;

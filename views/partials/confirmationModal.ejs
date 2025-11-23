@@ -1,41 +1,182 @@
-<!-- Confirmation Modal -->
-<div id="confirmationModal" class="modal hidden">
-  <div class="modal-overlay"></div>
-  <div class="modal-container">
+<!-- Global Confirmations Modal -->
+<div id="confirmationsModal" class="modal hidden">
+  <div class="modal-content modal-large">
     <div class="modal-header">
-      <h2>
-        ⚠️ Pending Confirmations 
-        <span id="modalPendingCount" class="pending-count">0</span>
-      </h2>
-      <button id="closeConfirmationModal" class="modal-close" aria-label="Close">&times;</button>
+      <h3>⏰ Pending Confirmations</h3>
+      <button class="modal-close" id="closeConfirmationsModal">&times;</button>
     </div>
-    
-    <div class="modal-body">
-      <!-- Income Confirmations -->
-      <div id="modalIncomeSection" class="confirmation-section">
-        <h3 class="section-title">💰 Income Confirmations</h3>
-        <div id="modalIncomeConfirmations">
-          <p class="empty-state">Loading...</p>
-        </div>
-      </div>
-      
-      <!-- Expense Confirmations -->
-      <div id="modalExpenseSection" class="confirmation-section">
-        <h3 class="section-title">💳 Bill Confirmations</h3>
-        <div id="modalExpenseConfirmations">
-          <p class="empty-state">Loading...</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="modal-footer">
-      <button class="btn btn-warning" id="remindMeLaterBtn">⏰ Remind Me Later</button>
-      <button class="btn btn-success" id="closeModalBtn">✓ All Done</button>
+    <div class="modal-body" id="confirmationsModalBody">
+      <div class="confirmations-loading">Loading confirmations...</div>
     </div>
   </div>
 </div>
 
-<!-- Floating Notification Badge -->
-<div id="confirmationBadge" class="notification-badge hidden" title="Click to view pending confirmations">
-  <span id="badgeCount">0</span>
-</div>
+<script>
+// Global function to open confirmations modal
+window.openConfirmationsModal = async () => {
+  const modal = document.getElementById('confirmationsModal');
+  const body = document.getElementById('confirmationsModalBody');
+  
+  if (!modal || !body) return;
+  
+  // Show modal
+  modal.classList.remove('hidden');
+  
+  // Load confirmations
+  try {
+    const response = await fetchAPI('/confirmations');
+    
+    if (response.success) {
+      const allConfirmations = [...(response.pending || []), ...(response.snoozed || [])];
+      
+      if (allConfirmations.length === 0) {
+        body.innerHTML = '<p class="empty-state">✅ No pending confirmations! You\'re all caught up.</p>';
+        return;
+      }
+      
+      // Separate by type
+      const incomeConfirmations = allConfirmations.filter(c => c.type === 'income');
+      const expenseConfirmations = allConfirmations.filter(c => c.type === 'expense');
+      
+      let html = '';
+      
+      if (incomeConfirmations.length > 0) {
+        html += '<h4>💰 Income Confirmations</h4>';
+        html += '<div class="confirmations-list">';
+        incomeConfirmations.forEach(confirmation => {
+          html += createIncomeConfirmationHTML(confirmation);
+        });
+        html += '</div>';
+      }
+      
+      if (expenseConfirmations.length > 0) {
+        html += '<h4>💸 Expense Confirmations</h4>';
+        html += '<div class="confirmations-list">';
+        expenseConfirmations.forEach(confirmation => {
+          html += createExpenseConfirmationHTML(confirmation);
+        });
+        html += '</div>';
+      }
+      
+      body.innerHTML = html;
+    }
+  } catch (error) {
+    body.innerHTML = '<p class="error-state">Failed to load confirmations. Please refresh the page.</p>';
+    console.error('Failed to load confirmations:', error);
+  }
+};
+
+// Global function to reload confirmations (called after confirm/skip/snooze)
+window.reloadConfirmations = async () => {
+  await window.openConfirmationsModal();
+  
+  // Also reload the notification banner count
+  if (typeof window.reloadNotifications === 'function') {
+    await window.reloadNotifications(false); // Don't auto-open again
+  }
+};
+
+function createIncomeConfirmationHTML(confirmation) {
+  const now = new Date();
+  const dueDate = new Date(confirmation.dueDate);
+  const daysOverdue = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));
+  const isOverdue = daysOverdue > 0;
+  const isSnoozed = confirmation.status === 'snoozed';
+  
+  const overdueClass = isOverdue ? 'confirmation-overdue' : '';
+  const snoozedClass = isSnoozed ? 'confirmation-snoozed' : '';
+  
+  let statusBadge = '';
+  if (isSnoozed) {
+    const snoozeDate = new Date(confirmation.snoozeUntil);
+    statusBadge = `<span class="status-badge snoozed-badge">⏰ Snoozed until ${formatDate(snoozeDate)}</span>`;
+  } else if (isOverdue) {
+    statusBadge = `<span class="status-badge overdue-badge">⚠️ ${daysOverdue} day${daysOverdue > 1 ? 's' : ''} overdue</span>`;
+  } else {
+    statusBadge = `<span class="status-badge today-badge">📅 Today</span>`;
+  }
+  
+  return `
+    <div class="confirmation-item ${overdueClass} ${snoozedClass}">
+      <div class="confirmation-header">
+        ${statusBadge}
+        <span class="confirmation-date">Due: ${formatDate(dueDate)}</span>
+      </div>
+      <div class="confirmation-text">
+        Did you get paid ${formatCurrency(confirmation.expectedAmount)} from ${confirmation.name}?
+      </div>
+      <div class="confirmation-actions">
+        <button class="btn btn-success btn-sm" onclick="confirmIncome('${confirmation._id}', ${confirmation.expectedAmount})">✓ YES - Received</button>
+        <button class="btn btn-warning btn-sm" onclick="snoozeConfirmation('${confirmation._id}')">⏰ NOT YET</button>
+        <button class="btn btn-primary btn-sm" onclick="showDifferentAmount('${confirmation._id}', 'income')">💰 Different Amount</button>
+      </div>
+    </div>
+  `;
+}
+
+function createExpenseConfirmationHTML(confirmation) {
+  const now = new Date();
+  const dueDate = new Date(confirmation.dueDate);
+  const daysOverdue = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));
+  const isOverdue = daysOverdue > 0;
+  const isSnoozed = confirmation.status === 'snoozed';
+  
+  const overdueClass = isOverdue ? 'confirmation-overdue' : '';
+  const snoozedClass = isSnoozed ? 'confirmation-snoozed' : '';
+  
+  let statusBadge = '';
+  if (isSnoozed) {
+    const snoozeDate = new Date(confirmation.snoozeUntil);
+    statusBadge = `<span class="status-badge snoozed-badge">⏰ Snoozed until ${formatDate(snoozeDate)}</span>`;
+  } else if (isOverdue) {
+    statusBadge = `<span class="status-badge overdue-badge">⚠️ ${daysOverdue} day${daysOverdue > 1 ? 's' : ''} overdue</span>`;
+  } else {
+    statusBadge = `<span class="status-badge today-badge">📅 Today</span>`;
+  }
+  
+  return `
+    <div class="confirmation-item ${overdueClass} ${snoozedClass}">
+      <div class="confirmation-header">
+        ${statusBadge}
+        <span class="confirmation-date">Due: ${formatDate(dueDate)}</span>
+      </div>
+      <div class="confirmation-text">
+        Is the ${confirmation.name} (${formatCurrency(confirmation.expectedAmount)}) paid this month?
+      </div>
+      <div class="confirmation-actions">
+        <button class="btn btn-success btn-sm" onclick="showExpenseDate('${confirmation._id}')">✓ YES - Mark Paid</button>
+        <button class="btn btn-warning btn-sm" onclick="snoozeConfirmation('${confirmation._id}')">⏰ NOT YET</button>
+        <button class="btn btn-danger btn-sm" onclick="skipConfirmation('${confirmation._id}')">✗ SKIP THIS MONTH</button>
+      </div>
+    </div>
+  `;
+}
+
+// Close modal functionality
+document.addEventListener('DOMContentLoaded', () => {
+  const closeBtn = document.getElementById('closeConfirmationsModal');
+  const modal = document.getElementById('confirmationsModal');
+  
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      modal?.classList.add('hidden');
+    });
+  }
+  
+  // Close on background click
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target.id === 'confirmationsModal') {
+        modal.classList.add('hidden');
+      }
+    });
+  }
+  
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      modal?.classList.add('hidden');
+    }
+  });
+});
+</script>
