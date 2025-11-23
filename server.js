@@ -71,6 +71,19 @@ app.get('/faq', (req, res) => {
   res.render('faq');
 });
 
+// MANUAL CRON TRIGGER
+app.get('/trigger-cron', protect, async (req, res) => {
+  try {
+    const { dailyJob } = require('./services/cronJobs');
+    console.log('⚡ Manual cron trigger started by user:', req.user.username);
+    await dailyJob.trigger();
+    res.json({ success: true, message: 'Cron job executed. Check confirmations.' });
+  } catch (error) {
+    console.error('Manual cron trigger error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 app.get('/', (req, res) => {
   res.redirect('/dashboard');
 });
@@ -87,4 +100,5 @@ app.listen(PORT, () => {
   if (process.env.NODE_ENV === 'production') {
     startCronJobs();
   }
+
 });
