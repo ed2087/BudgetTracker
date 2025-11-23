@@ -71,18 +71,67 @@ app.get('/faq', (req, res) => {
   res.render('faq');
 });
 
-// MANUAL CRON TRIGGER
+
+// MANUAL CRON TRIGGER - Creates all missing confirmations
 app.get('/trigger-cron', protect, async (req, res) => {
   try {
-    const { dailyJob } = require('./services/cronJobs');
-    console.log('⚡ Manual cron trigger started by user:', req.user.username);
-    await dailyJob.trigger();
-    res.json({ success: true, message: 'Cron job executed. Check confirmations.' });
+    const { runDailyJob } = require('./services/cronJobs');
+    const RecurringTemplate = require('./models/RecurringTemplate');
+    const Income = require('./models/Income');
+    const PendingConfirmation = require('./models/PendingConfirmation');
+    
+    console.log('\n========================================');
+    console.log('⚡ MANUAL CRON TRIGGER');
+    console.log('User:', req.user.username, 'ID:', req.user._id);
+    console.log('========================================\n');
+    
+    // Check what data exists BEFORE running cron
+    const templates = await RecurringTemplate.find({ userId: req.user._id, active: true });
+    const incomes = await Income.find({ userId: req.user._id, active: true });
+    const existingConfirmations = await PendingConfirmation.find({ userId: req.user._id });
+    
+    console.log('BEFORE CRON:');
+    console.log(`- Recurring Templates: ${templates.length}`);
+    templates.forEach(t => console.log(`  - ${t.name} (created: ${t.createdAt})`));
+    console.log(`- Income Sources: ${incomes.length}`);
+    incomes.forEach(i => console.log(`  - ${i.sourceName} (next payday: ${i.nextPayday})`));
+    console.log(`- Existing Confirmations: ${existingConfirmations.length}`);
+    console.log('');
+    
+    // Run the cron job
+    await runDailyJob();
+    
+    // Check what was created AFTER running cron
+    const newConfirmations = await PendingConfirmation.find({ userId: req.user._id });
+    
+    console.log('\nAFTER CRON:');
+    console.log(`- Total Confirmations: ${newConfirmations.length}`);
+    console.log(`- New Confirmations Created: ${newConfirmations.length - existingConfirmations.length}`);
+    
+    newConfirmations.forEach(c => {
+      console.log(`  - ${c.type}: ${c.name} - $${c.expectedAmount} (due: ${c.dueDate}) [${c.status}]`);
+    });
+    
+    res.json({ 
+      success: true, 
+      message: 'Cron job executed',
+      before: existingConfirmations.length,
+      after: newConfirmations.length,
+      created: newConfirmations.length - existingConfirmations.length,
+      confirmations: newConfirmations.map(c => ({
+        type: c.type,
+        name: c.name,
+        amount: c.expectedAmount,
+        dueDate: c.dueDate,
+        status: c.status
+      }))
+    });
   } catch (error) {
     console.error('Manual cron trigger error:', error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message, stack: error.stack });
   }
 });
+
 
 app.get('/', (req, res) => {
   res.redirect('/dashboard');
@@ -100,5 +149,4 @@ app.listen(PORT, () => {
   if (process.env.NODE_ENV === 'production') {
     startCronJobs();
   }
-
 });

@@ -6,144 +6,190 @@ const User = require('../models/User');
 const { calculateNextPayday } = require('../utils/helpers');
 const Notification = require('./notifications');
 
-const dailyJob = cron.schedule('0 8 * * *', async () => {
+const runDailyJob = async () => {
   console.log('=== DAILY CRON START ===', new Date());
   
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    const currentDay = today.getDate();
     
-    // ===== INCOME PAYDAY CHECKS (Last 7 Days) =====
-    const oneWeekAgo = new Date(today);
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    
-    const incomes = await Income.find({
+    // ===== BACKFILL ALL MISSING RECURRING BILLS =====
+    const recurringTemplates = await RecurringTemplate.find({
       active: true,
-      nextPayday: {
-        $gte: oneWeekAgo,
-        $lte: today
-      }
+      autoPrompt: true
     });
     
-    console.log(`Checking ${incomes.length} income sources for paydays`);
+    console.log(`Checking ${recurringTemplates.length} recurring templates for missing confirmations`);
+    
+    for (const template of recurringTemplates) {
+      // Get the month when this template was created
+      const createdDate = new Date(template.createdAt);
+      const startMonth = createdDate.getMonth();
+      const startYear = createdDate.getFullYear();
+      
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      
+      console.log(`\n--- Checking ${template.name} (created ${createdDate.toDateString()}) ---`);
+      
+      // Loop through EVERY MONTH from creation until now
+      for (let year = startYear; year <= currentYear; year++) {
+        const monthStart = (year === startYear) ? startMonth : 0;
+        const monthEnd = (year === currentYear) ? currentMonth : 11;
+        
+        for (let month = monthStart; month <= monthEnd; month++) {
+          const monthStartDate = new Date(year, month, 1);
+          const monthEndDate = new Date(year, month + 1, 0);
+          
+          // Check if confirmation exists for THIS specific month
+          const existing = await PendingConfirmation.findOne({
+            userId: template.userId,
+            type: 'expense',
+            referenceId: template._id,
+            dueDate: { $gte: monthStartDate, $lte: monthEndDate }
+          });
+          
+          if (!existing) {
+            // CREATE MISSING CONFIRMATION
+            const billDueDate = new Date(year, month, template.dueDay);
+            
+            await PendingConfirmation.create({
+              userId: template.userId,
+              type: 'expense',
+              referenceId: template._id,
+              referenceModel: 'RecurringTemplate',
+              name: template.name,
+              expectedAmount: template.expectedAmount,
+              dueDate: billDueDate,
+              status: 'pending'
+            });
+            
+            const daysLate = Math.floor((today - billDueDate) / (1000 * 60 * 60 * 24));
+            console.log(`✓ Created: ${template.name} for ${monthStartDate.toLocaleDateString('en-US', {month: 'short', year: 'numeric'})} (${daysLate > 0 ? daysLate + ' days overdue' : 'on time'})`);
+          } else {
+            console.log(`  Skip: ${template.name} for ${monthStartDate.toLocaleDateString('en-US', {month: 'short', year: 'numeric'})} (status: ${existing.status})`);
+          }
+        }
+      }
+    }
+    
+    // ===== BACKFILL ALL MISSING INCOME CONFIRMATIONS =====
+    const incomes = await Income.find({ active: true });
+    
+    console.log(`\nChecking ${incomes.length} income sources for missing confirmations`);
     
     for (const income of incomes) {
-      // Check if confirmation already exists for this specific payday
-      const paydayStart = new Date(income.nextPayday);
-      paydayStart.setHours(0, 0, 0, 0);
-      const paydayEnd = new Date(paydayStart);
-      paydayEnd.setDate(paydayEnd.getDate() + 1);
+      if (!income.nextPayday || income.frequency === 'irregular') {
+        console.log(`Skip ${income.sourceName} - irregular or no next payday set`);
+        continue;
+      }
       
-      const existing = await PendingConfirmation.findOne({
-        userId: income.userId,
-        type: 'income',
-        referenceId: income._id,
-        status: { $in: ['pending', 'confirmed', 'snoozed'] },
-        dueDate: {
-          $gte: paydayStart,
-          $lt: paydayEnd
+      console.log(`\n--- Checking ${income.sourceName} (next payday: ${income.nextPayday.toDateString()}) ---`);
+      
+      // Calculate all past paydays from creation date until today
+      let currentPayday = new Date(income.nextPayday);
+      const createdDate = new Date(income.createdAt);
+      const paydays = [];
+      
+      // Go backwards from nextPayday to find the earliest payday after creation
+      let tempDate = new Date(currentPayday);
+      while (tempDate > createdDate) {
+        tempDate = calculatePreviousPayday(tempDate, income.frequency);
+      }
+      
+      // Now go forward and collect all paydays up to today
+      while (tempDate <= today) {
+        if (tempDate >= createdDate) {
+          paydays.push(new Date(tempDate));
         }
-      });
+        tempDate = calculateNextPayday(income.frequency, tempDate);
+      }
       
-      if (!existing) {
-        await PendingConfirmation.create({
+      console.log(`Found ${paydays.length} paydays to check`);
+      
+      // Check each payday
+      for (const payday of paydays) {
+        const paydayStart = new Date(payday);
+        paydayStart.setHours(0, 0, 0, 0);
+        const paydayEnd = new Date(paydayStart);
+        paydayEnd.setDate(paydayEnd.getDate() + 1);
+        
+        const existing = await PendingConfirmation.findOne({
           userId: income.userId,
           type: 'income',
           referenceId: income._id,
-          referenceModel: 'Income',
-          name: income.sourceName,
-          expectedAmount: income.amount,
-          dueDate: income.nextPayday,
-          status: 'pending'
+          dueDate: { $gte: paydayStart, $lt: paydayEnd }
         });
         
-        const daysLate = Math.floor((today - income.nextPayday) / (1000 * 60 * 60 * 24));
-        console.log(`✓ Created income confirmation for ${income.sourceName} (payday: ${income.nextPayday.toDateString()}, ${daysLate > 0 ? daysLate + ' days late' : 'on time'})`);
-        
-        Notification.create(
-          income.userId,
-          `Payday! Confirm you received $${income.amount} from ${income.sourceName}.`,
-          'confirmation',
-          'high'
-        );
+        if (!existing) {
+          await PendingConfirmation.create({
+            userId: income.userId,
+            type: 'income',
+            referenceId: income._id,
+            referenceModel: 'Income',
+            name: income.sourceName,
+            expectedAmount: income.amount,
+            dueDate: payday,
+            status: 'pending'
+          });
+          
+          const daysLate = Math.floor((today - payday) / (1000 * 60 * 60 * 24));
+          console.log(`✓ Created: ${income.sourceName} for ${payday.toDateString()} (${daysLate > 0 ? daysLate + ' days late' : 'on time'})`);
+        } else {
+          console.log(`  Skip: ${income.sourceName} for ${payday.toDateString()} (status: ${existing.status})`);
+        }
       }
     }
     
-    // ===== RECURRING BILL CHECKS (Current Month) =====
-    const recurringTemplates = await RecurringTemplate.find({
-      active: true,
-      autoPrompt: true,
-      dueDay: { $lte: currentDay }  // All bills due up to today this month
-    });
-    
-    console.log(`Checking ${recurringTemplates.length} recurring bills for current month`);
-    
-    for (const template of recurringTemplates) {
-      const startOfMonth = new Date(currentYear, currentMonth, 1);
-      const endOfMonth = new Date(currentYear, currentMonth + 1, 0);
-      
-      const existing = await PendingConfirmation.findOne({
-        userId: template.userId,
-        type: 'expense',
-        referenceId: template._id,
-        status: { $in: ['pending', 'confirmed', 'snoozed'] },
-        createdAt: { $gte: startOfMonth, $lte: endOfMonth }
-      });
-      
-      if (!existing) {
-        const billDueDate = new Date(currentYear, currentMonth, template.dueDay);
-        
-        await PendingConfirmation.create({
-          userId: template.userId,
-          type: 'expense',
-          referenceId: template._id,
-          referenceModel: 'RecurringTemplate',
-          name: template.name,
-          expectedAmount: template.expectedAmount,
-          dueDate: billDueDate,
-          status: 'pending'
-        });
-        
-        const daysLate = Math.floor((today - billDueDate) / (1000 * 60 * 60 * 24));
-        console.log(`✓ Created expense confirmation for ${template.name} (due: day ${template.dueDay}, ${daysLate > 0 ? daysLate + ' days overdue' : 'on time'})`);
-        
-        Notification.create(
-          template.userId,
-          `Is the ${template.name} ($${template.expectedAmount}) paid this month?`,
-          'confirmation',
-          'high'
-        );
-      }
-    }
-    
-    // ===== OVERDUE REMINDERS (3+ days old) =====
-    const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+    // ===== OVERDUE REMINDERS (7+ days old and still pending) =====
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const overdue = await PendingConfirmation.find({
       status: 'pending',
-      dueDate: { $lt: threeDaysAgo }
+      dueDate: { $lt: sevenDaysAgo }
     });
     
-    console.log(`Found ${overdue.length} overdue confirmations needing reminders`);
+    console.log(`\nFound ${overdue.length} overdue confirmations (7+ days old)`);
     
     for (const confirmation of overdue) {
       const daysOverdue = Math.floor((today - confirmation.dueDate) / (1000 * 60 * 60 * 24));
       
       Notification.create(
         confirmation.userId,
-        `Reminder: ${confirmation.name} ($${confirmation.expectedAmount}) is ${daysOverdue} days overdue. Please confirm.`,
+        `OVERDUE: ${confirmation.name} ($${confirmation.expectedAmount}) is ${daysOverdue} days overdue!`,
         'warning',
         'high'
       );
     }
     
-    console.log('=== DAILY CRON END ===');
+    console.log('\n=== DAILY CRON END ===');
   } catch (error) {
     console.error('Daily cron job error:', error);
+    throw error;
   }
-}, {
+};
+
+// Helper to calculate previous payday
+function calculatePreviousPayday(date, frequency) {
+  const prev = new Date(date);
+  
+  switch(frequency) {
+    case 'weekly':
+      prev.setDate(prev.getDate() - 7);
+      break;
+    case 'biweekly':
+      prev.setDate(prev.getDate() - 14);
+      break;
+    case 'monthly':
+      prev.setMonth(prev.getMonth() - 1);
+      break;
+    default:
+      return null;
+  }
+  
+  return prev;
+}
+
+const dailyJob = cron.schedule('0 8 * * *', runDailyJob, {
   scheduled: false,
   timezone: "America/New_York"
 });
@@ -180,12 +226,12 @@ const monthlyJob = cron.schedule('1 0 1 * *', async () => {
     const result = await PendingConfirmation.updateMany(
       { 
         status: { $in: ['confirmed', 'skipped'] },
-        updatedAt: { $lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
+        updatedAt: { $lt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) }
       },
       { status: 'archived' }
     );
     
-    console.log(`Archived ${result.modifiedCount} old confirmations`);
+    console.log(`Archived ${result.modifiedCount} old confirmations (90+ days)`);
     console.log('=== MONTHLY CRON END ===');
   } catch (error) {
     console.error('Monthly cron job error:', error);
@@ -194,25 +240,6 @@ const monthlyJob = cron.schedule('1 0 1 * *', async () => {
   scheduled: false,
   timezone: "America/New_York"
 });
-
-// Manual trigger functions for testing
-dailyJob.trigger = async () => {
-  console.log('⚡ MANUALLY TRIGGERING DAILY JOB');
-  const task = dailyJob.options.onTick;
-  await task();
-};
-
-weeklyJob.trigger = async () => {
-  console.log('⚡ MANUALLY TRIGGERING WEEKLY JOB');
-  const task = weeklyJob.options.onTick;
-  await task();
-};
-
-monthlyJob.trigger = async () => {
-  console.log('⚡ MANUALLY TRIGGERING MONTHLY JOB');
-  const task = monthlyJob.options.onTick;
-  await task();
-};
 
 const startCronJobs = () => {
   dailyJob.start();
@@ -236,5 +263,6 @@ module.exports = {
   stopCronJobs,
   dailyJob,
   weeklyJob,
-  monthlyJob
+  monthlyJob,
+  runDailyJob
 };

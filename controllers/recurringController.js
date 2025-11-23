@@ -1,5 +1,6 @@
 const RecurringTemplate = require('../models/RecurringTemplate');
 const Expense = require('../models/Expense');
+const PendingConfirmation = require('../models/PendingConfirmation');
 const { validateAmount, isValidDueDay, sanitizeInput } = require('../utils/helpers');
 
 exports.getAllRecurring = async (req, res) => {
@@ -40,8 +41,43 @@ exports.createRecurring = async (req, res) => {
       active: active !== undefined ? active : true
     });
 
+    // ===== AUTO-CREATE PENDING CONFIRMATION FOR CURRENT MONTH =====
+    if ((autoPrompt !== undefined ? autoPrompt : true) && (active !== undefined ? active : true)) {
+      const today = new Date();
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      const monthStart = new Date(currentYear, currentMonth, 1);
+      const monthEnd = new Date(currentYear, currentMonth + 1, 0);
+      
+      // Check if confirmation already exists for this month (shouldn't, but safety check)
+      const existingConfirmation = await PendingConfirmation.findOne({
+        userId: req.user._id,
+        type: 'expense',
+        referenceId: template._id,
+        dueDate: { $gte: monthStart, $lte: monthEnd }
+      });
+      
+      if (!existingConfirmation) {
+        const billDueDate = new Date(currentYear, currentMonth, dueDay);
+        
+        await PendingConfirmation.create({
+          userId: req.user._id,
+          type: 'expense',
+          referenceId: template._id,
+          referenceModel: 'RecurringTemplate',
+          name: sanitizeInput(name),
+          expectedAmount,
+          dueDate: billDueDate,
+          status: 'pending'
+        });
+        
+        console.log(`✓ Auto-created confirmation for new recurring bill: ${name} (due: ${billDueDate.toDateString()})`);
+      }
+    }
+
     res.status(201).json({ success: true, template });
   } catch (error) {
+    console.error('Create recurring error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
